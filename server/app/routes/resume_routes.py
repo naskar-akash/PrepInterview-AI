@@ -1,4 +1,5 @@
 from flask import Flask, Blueprint
+from ..models.resume_model import Resume
 
 resume_bp = Blueprint('resume', __name__, url_prefix='/resume')
 
@@ -10,9 +11,6 @@ def get_resume():
 def upload_resume():
     return {"message": "Resume uploaded successfully"}
 
-@resume_bp.route('/update', methods=['PUT'])
-def update_resume():
-    return {"message": "Resume updated successfully"}
 
 @resume_bp.route('/delete', methods=['DELETE'])
 def delete_resume():

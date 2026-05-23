@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Enum, DateTime
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from ..db import Base
 
 class User(Base):
@@ -10,5 +11,6 @@ class User(Base):
     password = Column(String(100), nullable=False)
     age = Column(Integer)
     gender = Column(Enum("Male","Female","Other"))
+    resumes = relationship("Resume", back_populates="user")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
