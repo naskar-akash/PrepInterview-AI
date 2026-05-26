@@ -2,8 +2,10 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "motion/react";
 import { signupUser } from "../services/AuthServices";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -13,9 +15,11 @@ const Signup = () => {
   } = useForm();
   const onSubmit = async(data) => {
     try {
-      console.log(data)
       const response = await signupUser(data);
-      console.log(response);
+      alert(response?.data.message);
+      if (response?.status === 201){
+        navigate("/login");
+      }
       reset();
     } catch (error) {
       alert("An error occurred during signup. Please try again.");
