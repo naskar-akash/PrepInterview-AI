@@ -1,80 +1,115 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { motion } from "motion/react";
 
 const Signup = () => {
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data) => {
+    console.log(data);
+    reset();
+  };
 
   return (
-    <div classname="flex justify-center items-center">
-      <div className="bg-red-500 min-h-screen max-w-4xl">
-        <div className="flex flex-col">
-          <h2 className="">Create Your Account</h2>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo
-          </p>
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.0 }}
+        className="w-full max-w-md rounded-3xl bg-white/80 p-8 shadow-2xl shadow-slate-400 border border-slate-200">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-purple-900 text-shadow-md text-shadow-mauve-400">Create Your Account</h2>
+          <p className="text-2xs text-green-700 mt-3 bg-green-200 rounded-full mx-8">Start your preparation with us</p>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <input
-            type="text"
-            className=""
-            {...register("username", {
-              required: { value: true, message: "This field is required" },
-            })}
-          />
+        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              placeholder="Enter username"
+              className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-800 shadow-sm transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100"
+              {...register("username", {
+                required: { value: true, message: "This field is required" },
+              })}
+            />
           {errors.username && (
-            <span className="text-[2px] text-red-600 font-semibold">
-              {errors.username.message}
-            </span>
+            <span className="text-sm text-red-600 font-medium">{errors.username.message}</span>
           )}
-          <input
-            type="text"
-            className=""
-            {...register("email", {
-              required: { value: true, message: "This field is required" },
-            })}
-          />
+
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Enter email address"
+              className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-800 shadow-sm transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100"
+              {...register("email", {
+                required: { value: true, message: "This field is required" },
+              })}
+            />
           {errors.email && (
-            <span className="text-[2px] text-red-600 font-semibold">
-              {errors.email.message}
-            </span>
+            <span className="text-sm text-red-600 font-medium">{errors.email.message}</span>
           )}
-          <input
-            type="password"
-            {...register(
-              "password",
-              { required: { value: true, message: "This field is required" } },
-              {
+
+            <input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Create a password"
+              className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-800 shadow-sm transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100"
+              {...register("password", {
+                required: { value: true, message: "This field is required" },
                 minLength: {
                   value: 8,
-                  message: "Password should contain min 8 characters",
+                  message: "Password should contain at least 8 characters",
                 },
-              },
-            )}
-          />
+              })}
+            />
           {errors.password && (
-            <span className="text-[2px] text-red-600 font-semibold">
-              {errors.password.message}
-            </span>
+            <span className="text-sm text-red-600 font-medium">{errors.password.message}</span>
           )}
-          <input type="number" {...register("age")} />
-          <select {...register("gender")}>
-            <option value="male">male</option>
-            <option value="female">female</option>
-            <option value="other">other</option>
-          </select>
 
-          <input type="submit" />
+          <div className="grid grid-cols-2 gap-4">
+              <input
+                id="age"
+                name="age"
+                type="number"
+                placeholder="Age"
+                className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-800 shadow-sm transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                {...register("age")}
+              />
+              <select
+                id="gender"
+                name="gender"
+                defaultValue="Gender"
+                className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-800 shadow-sm transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                {...register("gender")}
+              >
+                <option value="Gender" disabled>Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+          </div>
+
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.90 }}
+            transition={{duration: 0.1}}
+            type="submit"
+            className="w-full rounded-2xl bg-indigo-600 px-4 py-3 text-white font-semibold shadow-lg shadow-indigo-200 transition hover:bg-indigo-700"
+          >
+            Create account
+          </motion.button>
         </form>
-        <div>
-          <p>Already have account?  <button>Login</button> to your account</p>
+        <div className="mt-6 text-center text-sm text-slate-500">
+          Already have an account? <button className="font-semibold text-indigo-600 hover:text-indigo-800">Login</button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
