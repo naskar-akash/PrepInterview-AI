@@ -36,12 +36,14 @@ def signup():
     db = SessionLocal()
     try:
         # getting data from request
-        data = request.json()
-        username = data.get['username']
-        email = data.get['email']
-        password = data.get['password']
-        age = data.get['age']
-        gender = data.get['gender']
+        data = request.get_json(silent=True)
+        if not data:
+            return jsonify({"message": "Invalid or missing JSON body"}), 400
+        username = data.get('username')
+        email = data.get('email')
+        password = data.get('password')
+        age = data.get('age')
+        gender = data.get('gender')
         
         # checking if user already exists
         existing_user = db.query(User).filter((User.username == username) | (User.email == email)).first()

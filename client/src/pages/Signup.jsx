@@ -13,6 +13,7 @@ const Signup = () => {
   } = useForm();
   const onSubmit = async(data) => {
     try {
+      console.log(data)
       const response = await signupUser(data);
       console.log(response);
       reset();
@@ -24,8 +25,8 @@ const Signup = () => {
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10">
       <motion.div
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, y:-40 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.0 }}
         className="w-full max-w-md rounded-3xl bg-white/80 p-8 shadow-2xl shadow-slate-400 border border-slate-200">
         <div className="text-center mb-8">
@@ -96,9 +97,9 @@ const Signup = () => {
                 {...register("gender")}
               >
                 <option value="Gender" disabled>Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
               </select>
           </div>
 
