@@ -1,6 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "motion/react";
+import { signupUser } from "../services/AuthServices";
 
 const Signup = () => {
   const {
@@ -10,9 +11,14 @@ const Signup = () => {
     reset,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => {
-    console.log(data);
-    reset();
+  const onSubmit = async(data) => {
+    try {
+      const response = await signupUser(data);
+      console.log(response);
+      reset();
+    } catch (error) {
+      alert("An error occurred during signup. Please try again.");
+    }
   };
 
   return (

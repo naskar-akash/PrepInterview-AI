@@ -10,7 +10,7 @@ DATABASE_URL = os.getenv("TIDB_CONNECTION_STRING")
 engine = create_engine(
     DATABASE_URL,
     pool_pre_ping=True,   # Check if the connection is alive before using it
-    echo=True,           # Enable SQL query logging in the terminal for debugging
+    echo=False,           # disable SQL query logging in the terminal for debugging
     )
 
 # create sessionLocal class db sessions
