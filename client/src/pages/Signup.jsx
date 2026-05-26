@@ -118,7 +118,7 @@ const Signup = () => {
           </motion.button>
         </form>
         <div className="mt-6 text-center text-sm text-slate-500">
-          Already have an account? <button className="font-semibold text-indigo-600 hover:text-indigo-800">Login</button>
+          Already have an account? <button onClick={()=>navigate("/login")} className="font-semibold text-indigo-600 hover:text-indigo-800">Login</button>
         </div>
       </motion.div>
     </div>
