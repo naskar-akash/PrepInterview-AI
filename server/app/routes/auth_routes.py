@@ -1,7 +1,11 @@
+import token
+
 from flask import jsonify, Blueprint, request, session
 from ..models.user_model import User
 from ..db import SessionLocal
 import bcrypt
+from ..utils.gentoken import generate_token
+from flask import make_response
 
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -76,11 +80,26 @@ def login():
             return jsonify({"message": "Invalid email or password"}), 401
 
         # checking password
-        if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+        is_correct = bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8'))
+        if not is_correct:
             return jsonify({"message": "Invalid email or password"}), 401
 
-        session['user_id'] = user.id
-        return jsonify({"message": "Login successful!"}), 200
+        token = generate_token(user.id)
+        if not token:
+            return jsonify({"message": "Error generating authentication token"}), 500
+        
+        response = make_response(jsonify({"message": "Login successful!"}))
+
+        # store token in cookie
+        response.set_cookie(
+            "token",
+            token,
+            httponly=True,
+            secure=False,      # True in production HTTPS
+            samesite="Lax",    # None in production                         
+            max_age=60*60*24   # 1 day
+        )
+        return response, 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -91,8 +110,10 @@ def login():
 @auth_bp.route('/logout', methods=['POST'])
 def logout():
     try:
-        session.pop('user_id', None)
-        return jsonify({"message": "Logout successful!"}), 200
+        response = make_response(jsonify({"message": "Logout successful"}))
+
+        response.delete_cookie("token",path="/",samesite="Lax")
+        return response, 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
