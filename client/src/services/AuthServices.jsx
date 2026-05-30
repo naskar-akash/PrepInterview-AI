@@ -3,7 +3,7 @@ import axios from "axios"
 
 export async function signupUser(data) {
     try {
-        const response = await axios.post(`/api/auth/signup`,
+        const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/auth/signup`,
             data,
             {
                 headers: { "Content-Type": "application/json" },
@@ -18,7 +18,7 @@ export async function signupUser(data) {
 
 export async function loginUser(data) {
     try {
-        const response = await axios.post(`/api/auth/login`,
+        const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/auth/login`,
             data,
             {
                 headers: { "Content-Type": "application/json" },
