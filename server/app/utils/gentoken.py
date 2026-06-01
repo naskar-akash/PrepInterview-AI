@@ -1,4 +1,3 @@
-import bcrypt
 import jwt
 import datetime
 import os
@@ -11,7 +10,7 @@ def generate_token(user_id):
     try:
         token = jwt.encode({
             "user_id": user_id,
-            "exp": datetime.datetime.now() + datetime.timedelta(days=1)
+            "exp": datetime.datetime.now() + datetime.timedelta(days=3)
             },
             secret_key, 
             algorithm="HS256")

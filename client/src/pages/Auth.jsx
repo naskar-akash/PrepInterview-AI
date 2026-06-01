@@ -1,7 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "motion/react";
-import { signupUser } from "../services/AuthServices";
+import { googleAuthUser } from "../services/AuthServices";
 import { useNavigate } from "react-router-dom";
 import { RiRobot3Fill } from "react-icons/ri";
 import { IoSparklesSharp } from "react-icons/io5";
@@ -13,13 +13,19 @@ const Auth = () => {
   const navigate = useNavigate();
 
   const handleGoogleSignIn = async () => {
-    try{
-      const response = await signInWithPopup(auth, provider);
-      console.log(response)
-    } catch(error){
-      console.error("Google Sign-In Error:", error);
-    }
+    try {
+    const googleResponse = await signInWithPopup(auth, provider);
+
+    const data = {
+      name: googleResponse.user.displayName,
+      email: googleResponse.user.email,
+    };
+    const response = await googleAuthUser(data);
+    console.log(response.data);
+  } catch (error) {
+    console.error("Google Sign-In Error:", error);
   }
+};
 
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-stone-200 px-6 py-20">

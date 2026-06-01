@@ -1,9 +1,9 @@
 import axios from "axios"
 
 
-export async function signupUser(data) {
+export async function googleAuthUser(data) {
     try {
-        const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/auth/signup`,
+        const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/auth/google_auth`,
             data,
             {
                 headers: { "Content-Type": "application/json" },
@@ -16,24 +16,9 @@ export async function signupUser(data) {
     }
 }
 
-export async function loginUser(data) {
-    try {
-        const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/auth/login`,
-            data,
-            {
-                headers: { "Content-Type": "application/json" },
-                withCredentials: true,
-            }
-        );
-        return response;
-    } catch (error) {
-        throw error;
-    }   
-}
-
 export async function logoutUser() {
     try {
-        const response = await axios.post(`/api/auth/logout`, {}, { withCredentials: true });
+        const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/auth/logout`, {}, { withCredentials: true });
         return response;
     } catch (error) {
         throw error;
