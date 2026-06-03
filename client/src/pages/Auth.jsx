@@ -15,10 +15,12 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     try {
     const googleResponse = await signInWithPopup(auth, provider);
+    // console.log(googleResponse.user.photoURL)
 
     const data = {
       name: googleResponse.user.displayName,
       email: googleResponse.user.email,
+      profile_pic: googleResponse.user.photoURL,
     };
     const response = await googleAuthUser(data);
     console.log(response.data);

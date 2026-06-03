@@ -7,12 +7,12 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 # Route to handle user signup
 @auth_bp.route('/google_auth', methods=['POST'])
 def signup():
-    google_auth()
+    return google_auth()
 
 
 # Route to handle user logout
 @auth_bp.route('/logout', methods=['POST'])
 def logout():
-    logout()
+    return logout()
 
 
