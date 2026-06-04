@@ -8,6 +8,7 @@ def get_current_user(cur_user):
             "name": cur_user.name,
             "email": cur_user.email,
             "profile_pic": cur_user.profile_pic,
-            "credits": cur_user.credits
+            "credits": cur_user.credits,
+            "created_at": cur_user.created_at
         }
     }), 200
