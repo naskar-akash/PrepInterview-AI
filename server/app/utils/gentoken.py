@@ -18,3 +18,14 @@ def generate_token(user_id):
     except Exception as e:
         print(f"Error generating token: {str(e)}")
         return None
+    
+def decode_token(token):
+    try:
+        decoded = jwt.decode(token, secret_key, algorithms=["HS256"])
+        return decoded.get("user_id")
+    except jwt.ExpiredSignatureError:
+        print("Token has expired")
+        return None
+    except jwt.InvalidTokenError:
+        print("Invalid token")
+        return None

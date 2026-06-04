@@ -1,5 +1,5 @@
 import traceback
-from ..utils.gentoken import generate_token
+from ..utils.gentoken import decode_token, generate_token
 from flask import jsonify, request, session
 from ..models.user_model import User
 from ..db import SessionLocal
@@ -21,8 +21,8 @@ def google_auth():
             db.add(cur_user)
             db.commit()
             db.refresh(cur_user)
-        token = generate_token(cur_user.id)
-        response = make_response(jsonify({
+            token = generate_token(cur_user.id)
+            response = make_response(jsonify({
                 "message": "User created successfully",
                 "success": True,
                 "user": {
@@ -30,18 +30,40 @@ def google_auth():
                     "name": cur_user.name,
                     "email": cur_user.email,
                     "profile_pic": cur_user.profile_pic
-            }
-        }))
-        # store token in cookie
-        response.set_cookie(
+                }
+            }))
+            # store token in cookie
+            response.set_cookie(
                 "token",
                 token,
                 httponly=True,
                 secure=False,     
                 samesite="Lax",                           
                 max_age=60*60*24*7  
-        )
-        return response, 200
+            )
+            return response, 200
+        else:
+            token = generate_token(cur_user.id)
+            response = make_response(jsonify({
+                "message": "User logged in successfully",
+                "success": True,
+                "user": {
+                    "id": cur_user.id,
+                    "name": cur_user.name,
+                    "email": cur_user.email,
+                    "profile_pic": cur_user.profile_pic
+                }
+            }))
+            # store token in cookie
+            response.set_cookie(
+                "token",
+                token,
+                httponly=True,
+                secure=False,     
+                samesite="Lax",                           
+                max_age=60*60*24*7  
+            )
+            return response, 200
         
     except Exception as e:
         traceback.print_exc()
@@ -63,3 +85,4 @@ def logout():
         return response, 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    

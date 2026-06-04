@@ -2,6 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from .db import Base, engine
 from .routes.auth_routes import auth_bp
+from .routes.user_routes import user_bp
 from .routes.resume_routes import resume_bp
 import os
 from dotenv import load_dotenv
@@ -18,5 +19,5 @@ def create_app():
 
     app.register_blueprint(auth_bp)  # Register the auth blueprint
     app.register_blueprint(resume_bp)  # Register the resume blueprint
-
+    app.register_blueprint(user_bp)  # Register the user blueprint
     return app

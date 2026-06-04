@@ -1,5 +1,6 @@
 from flask import  Blueprint
 from ..controller.auth_controller import google_auth, logout
+from ..middleware.is_auth import is_auth
 
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -12,7 +13,8 @@ def signup():
 
 # Route to handle user logout
 @auth_bp.route('/logout', methods=['POST'])
-def logout():
+@is_auth
+def logout(cur_user=None):
     return logout()
 
 
