@@ -8,8 +8,11 @@ import { IoSparklesSharp } from "react-icons/io5";
 import { FcGoogle } from "react-icons/fc";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../utils/firebase"
+import {useDispatch} from 'react-redux' 
+import { setUserData } from '../redux/userSlice';
 
 const Auth = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleGoogleSignIn = async () => {
@@ -23,9 +26,10 @@ const Auth = () => {
       profile_pic: googleResponse.user.photoURL,
     };
     const response = await googleAuthUser(data);
-    console.log(response.data);
+    dispatch(setUserData(response.data.user));
   } catch (error) {
     console.error("Google Sign-In Error:", error);
+    dispatch(setUserData(null));
   }
 };
 

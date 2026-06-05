@@ -3,21 +3,25 @@ import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Auth from './pages/Auth'
 import { getCurrentUser } from './services/userServices'
+import {useDispatch} from 'react-redux' 
+import { setUserData } from './redux/userSlice'
 
 
 const App = () => {
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const getUser = async () => {
       try {
         const response = await getCurrentUser();
-        console.log(response?.data)
+        dispatch(setUserData(response.data.user))
       } catch (error) {
         console.log(error)
+        dispatch(setUserData(null))
       }
     }
     getUser();
-  }, [])
+  }, [dispatch])
   
 
   return (
