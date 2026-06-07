@@ -72,7 +72,7 @@ def google_auth():
         db.close()
 
 
-def logout():
+def logout(cur_user=None):
     try:
         response = make_response(
         jsonify({
@@ -80,7 +80,12 @@ def logout():
             "message": "Logged out successfully"
         }))
 
-        response.delete_cookie("token")
+        response.delete_cookie(
+            "token",
+            httponly=True,
+            secure=True,
+            samesite="None"
+        )
 
         return response, 200
     except Exception as e:

@@ -18,7 +18,7 @@ export async function googleAuthUser(data) {
 
 export async function logoutUser() {
     try {
-        const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/auth/logout`, {}, { withCredentials: true });
+        const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/auth/logout`,{}, { withCredentials: true });
         return response;
     } catch (error) {
         throw error;

@@ -7,7 +7,7 @@ import {useDispatch} from 'react-redux'
 import { setUserData } from './redux/userSlice'
 
 
-const App = () => {
+const App = ({isModel = false}) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -16,10 +16,13 @@ const App = () => {
         const response = await getCurrentUser();
         dispatch(setUserData(response.data.user))
       } catch (error) {
-        console.log(error)
-        dispatch(setUserData(null))
+        if (error.response?.status === 401) {
+        dispatch(setUserData(null));
+      } else {
+        console.error(error);
       }
     }
+  }
     getUser();
   }, [dispatch])
   

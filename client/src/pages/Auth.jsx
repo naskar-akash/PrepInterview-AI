@@ -11,14 +11,13 @@ import { auth, provider } from "../utils/firebase"
 import {useDispatch} from 'react-redux' 
 import { setUserData } from '../redux/userSlice';
 
-const Auth = () => {
+const Auth = ({isModel = false}) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleGoogleSignIn = async () => {
     try {
     const googleResponse = await signInWithPopup(auth, provider);
-    // console.log(googleResponse.user.photoURL)
 
     const data = {
       name: googleResponse.user.displayName,
@@ -34,12 +33,15 @@ const Auth = () => {
 };
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-center bg-stone-200 px-6 py-20">
+    <div className={`
+      w-full
+    ${isModel ? "py-4" : "min-h-screen flex items-center justify-center bg-stone-200 px-6 py-20"}`}>
       <motion.div
       initial={{opacity:0 , y: -40}}
       animate={{opacity:1 , y: 0}}
       transition={{duration: 1.05}}
-       className="w-full max-w-md p-8 rounded-2xl bg-white shadow-2xl border border-gray-300">
+       className={`w-full
+       ${isModel ? "max-w-md p-8 rounded-3xl" : "max-w-lg p-12 rounded-2xl"} bg-white shadow-2xl border border-gray-300`}>
         <div className="flex items-center justify-center gap-3 mb-6">
           <div className="bg-neutral-900 text-white p-2 rounded-lg">
             <RiRobot3Fill size={16} />

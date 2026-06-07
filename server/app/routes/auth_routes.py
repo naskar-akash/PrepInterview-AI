@@ -14,7 +14,7 @@ def signup():
 # Route to handle user logout
 @auth_bp.route('/logout', methods=['POST'])
 @is_auth
-def logout(cur_user=None):
-    return logout()
+def logout_route(cur_user=None):
+    return logout(cur_user)
 
 
