@@ -11,8 +11,8 @@ export const stepsArray = [
   {
     icon: <BsRobot size={24}/>,
     step: "Step 1",
-    title: "Role & Experience Selection",
-    description: "AI adjusts the interview difficulty based on your selected role and experience level."
+    title: "Role Selection",
+    description: "AI-adjusted interview based on your selected role and experience level."
   },
   {
     icon: <BsMic size={24}/>,

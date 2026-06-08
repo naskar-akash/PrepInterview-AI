@@ -29,7 +29,7 @@ const Home = () => {
             transition={{ duration: 0.8 }}
             className="text-4xl md:text-6xl font-semibold leading-tight max-w-4xl mx-auto"
           >
-            Speed up your preparation with
+            Prepare Yourself with
             <span className="relative inline-block mt-4">
               <span className="bg-green-100 text-green-600 rounded-full px-5 py-1">
                 Artificial Intelligence
@@ -88,19 +88,32 @@ const Home = () => {
               whileHover={{ rotate: 0, scale: 1.05 }}
               
                className={`relative bg-amber-100 rounded-3xl border-2 border-amber-300 hover:border-amber-500 p-10 w-80 max-w-[90%] shadow-md hover:shadow-2xl transition-all duration-300
-              ${index === 0 ? "rotate-[-4deg]" : ""}
+              ${index === 0 ? "-rotate-6" : ""}
               ${index === 1 ? "rotate-3 md:-mt-6 shadow-xl" : ""}
-              ${index === 2 ? "-rotate-3" : ""}
+              ${index === 2 ? "-rotate-6" : ""}
               `}>
-                <div className="bg-gray-200 p-4 rounded-full mb-4">
+                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white border-2 border-orange-500 text-pink-600 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
                   {step.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{step.step}</h3>
-                <h4 className="text-lg font-medium mb-2">{step.title}</h4>
-                <p className="text-gray-500">{step.description}</p>
+                <div className="pt-6 text-center">
+                <h3 className="text-xl font-bold mb-2 text-red-500">{step.step}</h3>
+                <h4 className="text-lg font-medium mb-2 bg-blue-50 text-cyan-600 rounded-full px-4 py-1">{step.title}</h4>
+                <p className="text-gray-500 text-sm">{step.description}</p>
+                </div>
               </motion.div>
             ))
           }
+        </div>
+        <div className="mb-32">
+          <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+           className="text-4xl font-semibold text-center mb-16">Advanced AI {" "}
+           <span className="text-emerald-600">
+             Capabilities
+           </span>
+           </motion.h2>
         </div>
       </div>
       {showAuth && <AuthModel onClose={()=>setShowAuth(false)}/>}
