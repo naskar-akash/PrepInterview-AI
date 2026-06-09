@@ -1,9 +1,7 @@
 import {
   BsRobot,
   BsMic,
-  BsClock,
-  BsBarChart,
-  BsFileEarmarkText,
+  BsClock
 } from "react-icons/bs";
 
 
