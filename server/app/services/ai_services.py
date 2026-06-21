@@ -15,7 +15,37 @@ def askAi(message):
             input=[
             {
                 "role": "system",
-                "content": "You are a helpful assistant."
+                "content": """
+                Go through the uploaded data of a certain resume. 
+                Then based on the data prepare 5 interview questions on the desired role and experience.
+                5 questions should be easy to medium to hard in difficulty.
+
+                Return the questions in a JSON format as follows:
+                {
+                    "questions": [
+                        {
+                            "question": "question 1",
+                            "difficulty": "easy"
+                        },
+                        {
+                            "question": "question 2",
+                            "difficulty": "easy to medium"
+                        },
+                        {
+                            "question": "question 3",
+                            "difficulty": "medium"
+                        },
+                        {
+                            "question": "question 4",
+                            "difficulty": "medium to hard"
+                        },
+                        {
+                            "question": "question 5",
+                            "difficulty": "hard"
+                        }
+                    ]
+                }
+                """
             },
             {
                 "role": "user",
