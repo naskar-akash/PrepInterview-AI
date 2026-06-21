@@ -39,7 +39,14 @@ def upload_resume(file, user_id):
         )
         db.add(new_resume)
         db.commit()
-        return {"message": "Resume uploaded successfully", "interview_questions": interview_questions}, 200
+        # delete file only after everything succeeds
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        return {
+            "message": "Resume uploaded successfully",
+            "interview_questions": interview_questions
+        }, 200
     except Exception as e:
         return {"error": str(e)}, 500
     finally:
