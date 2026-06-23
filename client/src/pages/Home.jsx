@@ -4,9 +4,9 @@ import { motion } from "motion/react";
 import Navbar from "../components/Navbar";
 import { useSelector } from "react-redux";
 import AuthModel from "../components/AuthModel";
-import { stepsArray } from "../assets/stepsArray";
+import { stepsArray } from "../assets/arrays/stepsArray";
 import { HiSparkles } from "react-icons/hi";
-import { aiArray, modesArray } from "../assets/imageArray";
+import { aiArray, modesArray } from "../assets/arrays/imageArray";
 import Footer from "../components/Footer";
 
 const Home = () => {

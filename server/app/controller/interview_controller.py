@@ -1,6 +1,7 @@
+from flask import jsonify
 from ..models.resume_model import Resume
 from ..db import SessionLocal
-from ..utils.resume_parser import extract_resume_sections
+from ..utils.resume_parser import extract_text_from_pdf
 import os
 from datetime import datetime
 from ..utils.allowed_file import allowed_file
@@ -24,18 +25,18 @@ def upload_resume(file, user_id):
         filename = f"{user_id}_{timestamp}_{file_name}"
         file_path = os.path.join(upload_folder, filename)
         file.save(file_path)
-        resume_data = extract_resume_sections(file_path)
+        resume_text = extract_text_from_pdf(file_path)
 
-        interview_questions = askAi(f"Based on the following resume data, please prepare 5 interview questions:\n\n{resume_data}")
+        ai_response = askAi(resume_text)
 
         new_resume = Resume(
             user_id=user_id,
             resume_title=filename,
             filepath=file_path,
-            extracted_skills=resume_data["skills"],
-            extracted_education=resume_data["education"],
-            extracted_projects=resume_data["projects"],
-            extracted_experience=resume_data["experience"]
+            extracted_skills=ai_response["skills"],
+            extracted_education=ai_response["education"],
+            extracted_projects=ai_response["projects"],
+            extracted_experience=ai_response["experience"]
         )
         db.add(new_resume)
         db.commit()
@@ -43,11 +44,20 @@ def upload_resume(file, user_id):
         if os.path.exists(file_path):
             os.remove(file_path)
 
-        return {
-            "message": "Resume uploaded successfully",
-            "interview_questions": interview_questions
-        }, 200
+        return jsonify({
+                "message": "Resume uploaded and processed successfully",
+                "resume": {
+                        "role": ai_response["role"],
+                        "experience": ai_response["experience"],
+                        "projects": ai_response["projects"],
+                        "skills": ai_response["skills"]
+                },
+                "resume_text": resume_text
+        }), 200
     except Exception as e:
+        # delete file only after everything succeeds
+        if os.path.exists(file_path):
+            os.remove(file_path)
         return {"error": str(e)}, 500
     finally:
         db.close()

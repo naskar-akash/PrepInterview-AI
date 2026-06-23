@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os
 from openai import OpenAI
 from flask import jsonify
+import json
 
 
 load_dotenv()
@@ -16,34 +17,15 @@ def askAi(message):
             {
                 "role": "system",
                 "content": """
-                Go through the uploaded data of a certain resume. 
-                Then based on the data prepare 5 interview questions on the desired role and experience.
-                5 questions should be easy to medium to hard in difficulty.
+                Extract structured data from resume.
 
-                Return the questions in a JSON format as follows:
+                Return strictly JSON:
                 {
-                    "questions": [
-                        {
-                            "question": "question 1",
-                            "difficulty": "easy"
-                        },
-                        {
-                            "question": "question 2",
-                            "difficulty": "easy to medium"
-                        },
-                        {
-                            "question": "question 3",
-                            "difficulty": "medium"
-                        },
-                        {
-                            "question": "question 4",
-                            "difficulty": "medium to hard"
-                        },
-                        {
-                            "question": "question 5",
-                            "difficulty": "hard"
-                        }
-                    ]
+                    "role": "string",
+                    "experience": "string",
+                    "education": "string",
+                    "projects": ["project1","project2",...],
+                    "skills": ["skill1","skill2",...]
                 }
                 """
             },
@@ -51,11 +33,17 @@ def askAi(message):
                 "role": "user",
                 "content": message
             }
-        ]
+        ],
+        text={
+            "format": {
+                    "type": "json_object"
+                }
+            }
         )
         content = response.output_text
         if not content or content.strip() == "":
             return jsonify({"error": "AI did not return a valid response"}), 500
-        return jsonify({"response": content}), 200
+        return json.loads(content)
     except Exception as e:
         return jsonify({"OPENAI error": str(e)}), 500
+    
