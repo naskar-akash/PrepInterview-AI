@@ -1,73 +1,117 @@
-import React,{useState} from 'react'
+import React, { useState } from "react";
 import { motion } from "motion/react";
-import { InterviewStep1Array } from '../assets/arrays/InterviewStep1Array';
-import { FaUserTie, FaBriefcase, FaFileUpload, FaMicrophoneAlt, FaChartLine } from "react-icons/fa";
+import { InterviewStep1Array } from "../assets/arrays/InterviewStep1Array";
+import {
+  FaUserTie,
+  FaBriefcase,
+  FaFileUpload,
+  FaMicrophoneAlt,
+  FaChartLine,
+} from "react-icons/fa";
 
-
-const Step1SetUp = ({onStart}) => {
+const Step1SetUp = ({ onStart }) => {
   const [role, setRole] = useState("");
   const [experience, setExperience] = useState("");
   const [mode, setMode] = useState("Technical");
-
+  const [resumeFile, setResumeFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [skills, setSkills] = useState([]);
+  const [resumeText, setResumeText] = useState("");
+  const [analysIsDone, setAnalysIsDone] = useState(false)
+  const [analysing, setAnalysing] = useState(false)
 
   return (
     <motion.div
-    initial={{opacity: 0}}
-    animate={{opacity: 1}}
-    transition={{duration: 0.6}}
-     className='min-h-screen flex justify-center items-center px-4 bg-linear-to-br from-gray-100 to-gray-200'>
-      <div className='w-full max-w-6xl bg-white rounded-3xl shadow-2xl grid md:grid-cols-2 overflow-hidden'>
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+      className="min-h-screen flex justify-center items-center px-4 bg-linear-to-br from-gray-100 to-gray-200"
+    >
+      <div className="w-full max-w-6xl bg-white rounded-3xl shadow-2xl grid md:grid-cols-2 overflow-hidden">
         {/* Left section */}
-        <motion.div 
-        initial={{x: -80, opacity: 0}}
-        animate={{x: 0, opacity: 1}}
-        transition={{duration: 0.7}}
-        className='bg-linear-to-bl from-green-200 to-green-100 p-12 flex flex-col justify-center'>
-          <h2 className='text-4xl font-bold text-gray-800 mb-6'>Start Your AI Interview</h2>
-          <p className="text-gray-600 mb-10">Practice real interview scenario powered by AI. Improve communication, technical skills and confidence with us.</p>
-          <div className='space-y-4'>
-            {
-             InterviewStep1Array.map((item,idx) => (
-              <motion.div key={idx} 
-              initial={{y: 30, opacity: 0}}
-              animate={{y: 0, opacity: 1}}
-              transition={{delay: 0.3 + idx * 0.2}}
-              whileHover={{scale: 1.05}}
-              className='flex items-center space-x-4 bg-white p-4 rounded-xl shadow-sm cursor-pointer'>
+        <motion.div
+          initial={{ x: -80, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.7 }}
+          className="bg-linear-to-bl from-green-200 to-green-100 p-12 flex flex-col justify-center"
+        >
+          <h2 className="text-4xl font-bold text-gray-800 mb-6">
+            Start Your AI Interview
+          </h2>
+          <p className="text-gray-600 mb-10">
+            Practice real interview scenario powered by AI. Improve
+            communication, technical skills and confidence with us.
+          </p>
+          <div className="space-y-4">
+            {InterviewStep1Array.map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3 + idx * 0.2 }}
+                whileHover={{ scale: 1.05 }}
+                className="flex items-center space-x-4 bg-white p-4 rounded-xl shadow-sm cursor-pointer"
+              >
                 {item.icon}
-                <span className='text-gray-700 font-medium'>{item.text}</span>
+                <span className="text-gray-700 font-medium">{item.text}</span>
               </motion.div>
-             ))
-            }
+            ))}
           </div>
         </motion.div>
         {/* Right section */}
-        <motion.div 
-        initial={{x: 80, opacity: 0}}
-        animate={{x: 0, opacity: 1}}
-        transition={{duration: 0.7}}
-        className='p-12 bg-white'>
-          <h2 className="text-3xl font-bold mb-8 text-gray-800">Set Your Interview</h2>
+        <motion.div
+          initial={{ x: 80, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.7 }}
+          className="p-12 bg-white"
+        >
+          <h2 className="text-3xl font-bold mb-8 text-gray-800">
+            Set Your Interview
+          </h2>
           <div className="space-y-6">
             <div className="relative">
-              <FaUserTie className='absolute top-4 left-4 text-gray-400'/>
-              <input type="text" placeholder='Enter role'
-              className='w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition'
-              onChange={(e)=>setRole(e.target.value)} value={role}
+              <FaUserTie className="absolute top-4 left-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Enter role"
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition"
+                onChange={(e) => setRole(e.target.value)}
+                value={role}
               />
             </div>
             <div className="relative">
-              <FaBriefcase className='absolute top-4 left-4 text-gray-400'/>
-              <input type="text" placeholder='Enter experience(e.g. 2 years)'
-              className='w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition'
-              onChange={(e)=>setExperience(e.target.value)} value={experience}
+              <FaBriefcase className="absolute top-4 left-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Enter experience(e.g. 2 years)"
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition"
+                onChange={(e) => setExperience(e.target.value)}
+                value={experience}
               />
             </div>
+              <select
+                onChange={(e)=>setMode(e.target.value)}
+                name="mode"
+                id=""
+                value={mode}
+                className="w-full py-3 px-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition"
+              >
+                <option value="Technical">Technical Interview</option>
+                <option value="HR">HR Interview</option>
+              </select>
+
+              {! analysing && (
+                <motion.div className="border-2 border-dashed border-gray-400 rounded-xl p-8 text-center cursor-pointer hover:border-green-600 hover:bg-green-100 transition">
+                  <FaFileUpload className="text-4xl mx-auto text-green-600 mb-3"/>
+                  <input type="file" accept="application/pdf" id="resumeUpload" />
+                </motion.div>
+              )}
           </div>
         </motion.div>
       </div>
     </motion.div>
-  )
-}
+  );
+};
 
-export default Step1SetUp
+export default Step1SetUp;
