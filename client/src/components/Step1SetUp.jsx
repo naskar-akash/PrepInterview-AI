@@ -18,8 +18,8 @@ const Step1SetUp = ({ onStart }) => {
   const [projects, setProjects] = useState([]);
   const [skills, setSkills] = useState([]);
   const [resumeText, setResumeText] = useState("");
-  const [analysIsDone, setAnalysIsDone] = useState(false)
-  const [analysing, setAnalysing] = useState(false)
+  const [analysIsDone, setAnalysIsDone] = useState(false);
+  const [analysing, setAnalysing] = useState(false);
 
   return (
     <motion.div
@@ -90,23 +90,46 @@ const Step1SetUp = ({ onStart }) => {
                 value={experience}
               />
             </div>
-              <select
-                onChange={(e)=>setMode(e.target.value)}
-                name="mode"
-                id=""
-                value={mode}
-                className="w-full py-3 px-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition"
-              >
-                <option value="Technical">Technical Interview</option>
-                <option value="HR">HR Interview</option>
-              </select>
+            <select
+              onChange={(e) => setMode(e.target.value)}
+              name="mode"
+              id=""
+              value={mode}
+              className="w-full py-3 px-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition"
+            >
+              <option value="Technical">Technical Interview</option>
+              <option value="HR">HR Interview</option>
+            </select>
 
-              {! analysing && (
-                <motion.div className="border-2 border-dashed border-gray-400 rounded-xl p-8 text-center cursor-pointer hover:border-green-600 hover:bg-green-100 transition">
-                  <FaFileUpload className="text-4xl mx-auto text-green-600 mb-3"/>
-                  <input type="file" accept="application/pdf" id="resumeUpload" />
-                </motion.div>
-              )}
+            {!analysing && (
+              <motion.div
+              whileHover={{scale: 1.02}}
+              onClick={() => document.getElementById('resumeUpload').click()}
+               className="border-2 border-dashed border-gray-400 rounded-xl p-8 text-center cursor-pointer hover:border-green-600 hover:bg-green-100 transition">
+                <FaFileUpload className="text-4xl mx-auto text-green-600 mb-3" />
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  id="resumeUpload"
+                  className="hidden"
+                  onChange={(e)=>setResumeFile(e.target.files[0])}
+                />
+                <p className="text-gray-600 font-medium">
+                  {resumeFile ? resumeFile.name : "Click here to upload resume (Optional)"}
+                </p>
+                {resumeFile && (
+                  <motion.button
+                  whileHover={{scale: 1.02}}
+                   className="mt-4 bg-gray-900 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition">
+                    {analysing ? "analysing...." : "analyse resume"}
+                </motion.button>)}
+              </motion.div>
+            )}
+            <motion.button
+            disabled={!role || !experience}
+            whileHover={{scale: 1.03}}
+            whileTap={{scale: 0.95}}
+             className="w-full disabled:bg-gray-600 bg-green-600 hover:bg-green-700 text-white py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md"></motion.button>
           </div>
         </motion.div>
       </div>
