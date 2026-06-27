@@ -1,5 +1,5 @@
 from flask import jsonify
-from ..models.resume_model import Resume
+from ..models.interview_model import Resume
 from ..db import SessionLocal
 from ..utils.resume_parser import extract_text_from_pdf
 import os

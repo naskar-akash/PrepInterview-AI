@@ -8,6 +8,8 @@ import {
   FaMicrophoneAlt,
   FaChartLine,
 } from "react-icons/fa";
+import {resumeUpload} from "../services/InterviewServices"
+
 
 const Step1SetUp = ({ onStart }) => {
   const [role, setRole] = useState("");
@@ -20,6 +22,22 @@ const Step1SetUp = ({ onStart }) => {
   const [resumeText, setResumeText] = useState("");
   const [analysIsDone, setAnalysIsDone] = useState(false);
   const [analysing, setAnalysing] = useState(false);
+
+
+  const handleUploadResume = async () => {
+    if (!resumeFile || analysing) return;
+    setAnalysing(true)
+    try {
+      console.log(resumeFile)
+      const response = await resumeUpload(resumeFile)
+      console.log(response)
+
+    } catch (error) {
+      console.log(error)
+      setAnalysIsDone(false)
+    }
+  }
+
 
   return (
     <motion.div
@@ -120,6 +138,7 @@ const Step1SetUp = ({ onStart }) => {
                 {resumeFile && (
                   <motion.button
                   whileHover={{scale: 1.02}}
+                  onClick={(e)=>{e.stopPropagation();handleUploadResume()}}
                    className="mt-4 bg-gray-900 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition">
                     {analysing ? "analysing...." : "analyse resume"}
                 </motion.button>)}
@@ -129,7 +148,9 @@ const Step1SetUp = ({ onStart }) => {
             disabled={!role || !experience}
             whileHover={{scale: 1.03}}
             whileTap={{scale: 0.95}}
-             className="w-full disabled:bg-gray-600 bg-green-600 hover:bg-green-700 text-white py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md"></motion.button>
+             className="w-full disabled:bg-gray-600 bg-green-600 hover:bg-green-700 text-white py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md">
+              Start Interview
+             </motion.button>
           </div>
         </motion.div>
       </div>
