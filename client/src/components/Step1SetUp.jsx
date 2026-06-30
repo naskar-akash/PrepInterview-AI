@@ -8,8 +8,7 @@ import {
   FaMicrophoneAlt,
   FaChartLine,
 } from "react-icons/fa";
-import {resumeUpload} from "../services/InterviewServices"
-
+import { resumeUpload } from "../services/InterviewServices";
 
 const Step1SetUp = ({ onStart }) => {
   const [role, setRole] = useState("");
@@ -23,21 +22,25 @@ const Step1SetUp = ({ onStart }) => {
   const [analysIsDone, setAnalysIsDone] = useState(false);
   const [analysing, setAnalysing] = useState(false);
 
-
   const handleUploadResume = async () => {
     if (!resumeFile || analysing) return;
-    setAnalysing(true)
+    setAnalysing(true);
     try {
-      console.log(resumeFile)
-      const response = await resumeUpload(resumeFile)
-      console.log(response)
+      const response = await resumeUpload(resumeFile);
+      console.log(response);
+      setRole(response?.data.resume.role || "");
+      setExperience(response?.data.resume.experience || "Fresher");
+      setProjects(response?.data.resume.projects || []);
+      setSkills(response?.data.resume.skills || []);
+      setResumeText(response?.data.resumeText || "");
 
+      setAnalysIsDone(true);
+      setAnalysing(false);
     } catch (error) {
-      console.log(error)
-      setAnalysIsDone(false)
+      console.log(error);
+      setAnalysing(false);
     }
-  }
-
+  };
 
   return (
     <motion.div
@@ -119,38 +122,96 @@ const Step1SetUp = ({ onStart }) => {
               <option value="HR">HR Interview</option>
             </select>
 
-            {!analysing && (
+            {!analysIsDone && (
               <motion.div
-              whileHover={{scale: 1.02}}
-              onClick={() => document.getElementById('resumeUpload').click()}
-               className="border-2 border-dashed border-gray-400 rounded-xl p-8 text-center cursor-pointer hover:border-green-600 hover:bg-green-100 transition">
+                whileHover={{ scale: 1.02 }}
+                onClick={() => document.getElementById("resumeUpload").click()}
+                className="border-2 border-dashed border-gray-400 rounded-xl p-8 text-center cursor-pointer hover:border-green-600 hover:bg-green-100 transition"
+              >
                 <FaFileUpload className="text-4xl mx-auto text-green-600 mb-3" />
                 <input
                   type="file"
                   accept="application/pdf"
                   id="resumeUpload"
                   className="hidden"
-                  onChange={(e)=>setResumeFile(e.target.files[0])}
+                  onChange={(e) => setResumeFile(e.target.files[0])}
                 />
                 <p className="text-gray-600 font-medium">
-                  {resumeFile ? resumeFile.name : "Click here to upload resume (Optional)"}
+                  {resumeFile
+                    ? resumeFile.name
+                    : "Click here to upload resume (Optional)"}
                 </p>
                 {resumeFile && (
                   <motion.button
-                  whileHover={{scale: 1.02}}
-                  onClick={(e)=>{e.stopPropagation();handleUploadResume()}}
-                   className="mt-4 bg-gray-900 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition">
-                    {analysing ? "analysing...." : "analyse resume"}
-                </motion.button>)}
+                    whileHover={{ scale: 1.02 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleUploadResume();
+                    }}
+                    className="mt-4 bg-gray-900 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition"
+                  >
+                    {analysing && (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    )}
+                    {analysing ? "Analysing..." : "Analyse Resume"}
+                  </motion.button>
+                )}
               </motion.div>
             )}
+
+            {/* Mapping projects and experiences */}
+            {analysIsDone && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-neutral-100 border-gray-200 rounded-xl space-y-4 p-5"
+              >
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Analysed Resume
+                </h3>
+                {projects?.length ? (
+                  <div>
+                    <p className="font-medium text-gray-800 mb-1">Projects:</p>
+                    <ul className="list-disc list-inside flex flex-wrap text-gray-600 gap-2">
+                      {projects.map((project, index) => (
+                        <li key={index} className="text-sm">{project}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="font-medium text-gray-800 mb-1">Projects:</p>
+                    <p className="text-gray-500 italic">No projects found.</p>
+                  </div>
+                )}
+                {skills?.length  ? (
+                  <div>
+                    <p className="font-medium text-gray-800 mb-1">Skills:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {skills.map((skill, index) => (
+                        <span key={index} className="bg-green-200 text-emerald-600 px-3 py-1 rounded-full text-xs">{skill}</span>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="font-medium text-gray-800 mb-1">Skills:</p>
+                    <p className="text-gray-500 italic">
+                      No skills found.
+                    </p>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
             <motion.button
-            disabled={!role || !experience}
-            whileHover={{scale: 1.03}}
-            whileTap={{scale: 0.95}}
-             className="w-full disabled:bg-gray-600 bg-green-600 hover:bg-green-700 text-white py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md">
+              disabled={!role || !experience}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-full disabled:bg-gray-600 bg-green-600 hover:bg-green-700 text-white py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md"
+            >
               Start Interview
-             </motion.button>
+            </motion.button>
           </div>
         </motion.div>
       </div>

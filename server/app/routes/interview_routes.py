@@ -11,9 +11,9 @@ def get_interview():
 @interview_bp.route('/upload', methods=['POST'])
 @is_auth
 def upload_resume_route(cur_user=None):
-    file = request.files.get('file')
+    file = request.files.get('resume')
     response, status_code = upload_resume(file, cur_user.id)
-    return jsonify(response), status_code
+    return response, status_code
     
 
 

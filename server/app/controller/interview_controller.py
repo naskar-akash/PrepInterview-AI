@@ -3,6 +3,7 @@ from ..models.interview_model import Resume
 from ..db import SessionLocal
 from ..utils.resume_parser import extract_text_from_pdf
 import os
+import json
 from datetime import datetime
 from ..utils.allowed_file import allowed_file
 from werkzeug.utils import secure_filename
@@ -29,17 +30,17 @@ def upload_resume(file, user_id):
 
         ai_response = askAi(resume_text)
 
-        new_resume = Resume(
-            user_id=user_id,
-            resume_title=filename,
-            filepath=file_path,
-            extracted_skills=ai_response["skills"],
-            extracted_education=ai_response["education"],
-            extracted_projects=ai_response["projects"],
-            extracted_experience=ai_response["experience"]
-        )
-        db.add(new_resume)
-        db.commit()
+        # new_resume = Resume(
+        #     user_id=user_id,
+        #     resume_title=filename,
+        #     filepath=file_path,
+        #     extracted_skills=json.dumps(ai_response["skills"]),
+        #     extracted_education=ai_response["education"],
+        #     extracted_projects=json.dumps(ai_response["projects"]),
+        #     extracted_experience=ai_response["experience"]
+        # )
+        # db.add(new_resume)
+        # db.commit()
         # delete file only after everything succeeds
         if os.path.exists(file_path):
             os.remove(file_path)
