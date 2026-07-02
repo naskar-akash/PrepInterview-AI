@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
 from .db import Base, engine
-from . import models
 from .routes.auth_routes import auth_bp
 from .routes.user_routes import user_bp
 from .routes.interview_routes import interview_bp
