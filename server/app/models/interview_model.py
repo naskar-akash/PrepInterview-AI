@@ -1,17 +1,34 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Text, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, Text, DateTime,Enum
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship 
 from ..db import Base
 
-class Resume(Base):
-    __tablename__ = "resumes"
+class Question(Base):
+    __tablename__ = "questions"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    resume_title = Column(String(255), nullable=False)
-    filepath = Column(String(500), nullable=False)
-    extracted_skills = Column(Text)
-    extracted_education = Column(Text)
-    extracted_projects = Column(Text)
-    extracted_experience = Column(Text)
-    user = relationship("User", back_populates="resumes")
+    question = Column(Text)
+    difficulty = Column(String(50))
+    timelimit = Column(Integer)
+    answer = Column(Text)
+    feedback = Column(Text)
+    score = Column(Integer, default=0)
+    confidence = Column(Integer, default=0)
+    communication = Column(Integer, default=0)
+    correctness = Column(Integer, default=0)
+    interview_id = Column(Integer, ForeignKey("interview.id"), nullable=False)
+    interview = relationship("Interview", back_populates="questions")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class Interview(Base):
+    __tablename__ = "interview"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    resume_id = Column(Integer, ForeignKey("resumes.id"))
+    role = Column(String(255), nullable=False)
+    experience = Column(Text, nullable=False)
+    mode = Column(Enum("Technical", "HR", name="mode_enum"), nullable=False)
+    resume_text = Column(Text)
+    user = relationship("User", back_populates="interviews")
+    questions = relationship("Question", back_populates="interview", cascade="all, delete-orphan")
+    resume = relationship("Resume", back_populates="interviews")
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now())

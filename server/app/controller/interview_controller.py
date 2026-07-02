@@ -1,5 +1,5 @@
 from flask import jsonify
-from ..models.interview_model import Resume
+from ..models.resume_model import Resume
 from ..db import SessionLocal
 from ..utils.resume_parser import extract_text_from_pdf
 import os
@@ -30,6 +30,7 @@ def upload_resume(file, user_id):
 
         ai_response = askAi(resume_text)
 
+        # logic to store resume in database
         # new_resume = Resume(
         #     user_id=user_id,
         #     resume_title=filename,

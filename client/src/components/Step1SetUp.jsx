@@ -27,7 +27,6 @@ const Step1SetUp = ({ onStart }) => {
     setAnalysing(true);
     try {
       const response = await resumeUpload(resumeFile);
-      console.log(response);
       setRole(response?.data.resume.role || "");
       setExperience(response?.data.resume.experience || "Fresher");
       setProjects(response?.data.resume.projects || []);

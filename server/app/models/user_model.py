@@ -11,5 +11,6 @@ class User(Base):
     profile_pic = Column(Text, default="/static/images/default-avatar.png")
     credits = Column(Integer, default=100)
     resumes = relationship("Resume", back_populates="user")
+    interviews = relationship("Interview", back_populates="user", cascade="all, delete-orphan")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
