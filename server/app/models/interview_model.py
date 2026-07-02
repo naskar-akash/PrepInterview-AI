@@ -31,4 +31,6 @@ class Interview(Base):
     user = relationship("User", back_populates="interviews")
     questions = relationship("Question", back_populates="interview", cascade="all, delete-orphan")
     resume = relationship("Resume", back_populates="interviews")
+    final_score = Column(Integer, default=0)
+    status = Column(Enum("Incomplete", "Completed", name="status_enum"), default="Incomplete")
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
