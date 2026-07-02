@@ -13,32 +13,7 @@ def askAi(message):
     try:
         response = client.responses.create(
             model="gpt-4o-mini",
-            input=[
-            {
-                "role": "system",
-                "content": """
-                Extract structured data from resume.
-
-                Return strictly JSON:
-                {
-                    "role": "string",
-                    "experience": "string",
-                    "education": "string",
-                    "projects": ["project1","project2",...],
-                    "skills": ["skill1","skill2",...]
-                }
-                """
-            },
-            {
-                "role": "user",
-                "content": message
-            }
-        ],
-        text={
-            "format": {
-                    "type": "json_object"
-                }
-            }
+            input= message
         )
         content = response.output_text
         if not content or content.strip() == "":

@@ -1,5 +1,6 @@
 from flask import jsonify
-from ..models.resume_model import Resume
+from ..models.user_model import User
+from ..models.interview_model import Interview, Question
 from ..db import SessionLocal
 from ..utils.resume_parser import extract_text_from_pdf
 import os
@@ -28,20 +29,34 @@ def upload_resume(file, user_id):
         file.save(file_path)
         resume_text = extract_text_from_pdf(file_path)
 
-        ai_response = askAi(resume_text)
+        # prompt to be sent to ai model
+        resume_field_message = [
+            {
+                "role": "system",
+                "content": """
+                Extract structured data from resume.
 
-        # logic to store resume in database
-        # new_resume = Resume(
-        #     user_id=user_id,
-        #     resume_title=filename,
-        #     filepath=file_path,
-        #     extracted_skills=json.dumps(ai_response["skills"]),
-        #     extracted_education=ai_response["education"],
-        #     extracted_projects=json.dumps(ai_response["projects"]),
-        #     extracted_experience=ai_response["experience"]
-        # )
-        # db.add(new_resume)
-        # db.commit()
+                Return strictly JSON:
+                {
+                    "role": "string",
+                    "experience": "string",
+                    "education": "string",
+                    "projects": ["project1","project2",...],
+                    "skills": ["skill1","skill2",...]
+                }
+                """
+            },
+            {
+                "role": "user",
+                "content": resume_text
+            }
+        ]
+
+        ai_response = askAi(resume_field_message)
+
+        if not ai_response or not isinstance(ai_response, dict):
+            return {"message": "AI failed to extract resume fields."}, 500
+        
         # delete file only after everything succeeds
         if os.path.exists(file_path):
             os.remove(file_path)
@@ -61,5 +76,106 @@ def upload_resume(file, user_id):
         if os.path.exists(file_path):
             os.remove(file_path)
         return {"error": str(e)}, 500
+    finally:
+        db.close()
+
+def generate_questions(role, experience, mode, projects, skills, resume_text, user_id):
+    db = SessionLocal()
+    try:
+        if not role or not experience or not mode:
+            return jsonify({"message": "role, experience, and mode are required"}), 400
+        role = role.strip()
+        experience = experience.strip()
+        mode = mode.strip()
+
+        if not user_id:
+            return {"message": "Unauthorized"}, 401
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            return {"message": "User not found"}, 404
+        if (user.credits < 50):
+            return {"message": "Not enough credits. Min 50 required."}, 403
+        project_text = ", ".join(projects) if projects else "None"
+        skill_text = ", ".join(skills) if skills else "None"
+        safe_resume = resume_text.strip() if resume_text else "None"
+
+        user_prompt = f"Role: {role}, Experience: {experience}, Interview Mode: {mode}, Projects: {project_text}, Skills: {skill_text}, Resume: {safe_resume}"
+        if not user_prompt:
+            return {"message": "No valid input provided"}, 400
+        # prompt to be sent to ai model
+        gen_question_message = [
+        {
+            "role": "system",
+            "content": """
+            You are a real human interviewer conducting a professional interview.
+            Speak in simple, natural English as if you are directly talking to the candidate. 
+
+            Generate exactly 5 questions.
+            Strict rules:
+            - Each questions must contain between 15 to 25 words.
+            - Each question must be a single complete sentence.
+            - Do not number them.
+            - Do not add explanations.
+            - Do not add extra text before or after.
+            - One questions per line only.
+            - Keep language simple and conversational.
+            - Questions must feel realistic and practical.
+
+            Difficulty progression:
+            Question 1 - easy
+            Question 2 - easy
+            Question 3 - medium
+            Question 4 - medium
+            Question 5 - hard
+
+            MUST FOLLOW:
+            Make questions based on the candidate's ROLE, EXPERIENCE, INTERVIEW MODE, projects(if provided), skills(if provided) and resume(if provided).
+    """
+        },
+        {
+            "role": "user",
+            "content": user_prompt
+        }
+    ]
+        
+        ai_questions = askAi(gen_question_message)
+        if not ai_questions or not ai_questions.strip():
+            return {"message": "AI returns empty response"}, 500
+        questions_array = [q.strip() for q in ai_questions.splitlines() if q.strip()][:5]
+        if len(questions_array) == 0:
+            return {"message": "AI failed to generate questions."}, 500
+        
+        user.credits -= 50
+        db.commit()
+
+        new_interview = Interview(
+            user_id=user_id,
+            role=role,
+            experience=experience,
+            mode=mode,
+            resume_text=safe_resume,
+            questions = [
+                            {
+                                "question": q,
+                                "difficulty": ["easy", "easy", "medium", "medium", "hard"][idx],
+                                "timelimit": [60, 60, 90, 90, 120][idx],
+                            }
+                            for idx, q in enumerate(questions_array)
+                        ]
+        )
+        db.add(new_interview)
+        db.commit()
+
+        return jsonify({
+            "message": "Questions generated successfully",
+            "interview_id": new_interview.id,
+            "credits_left": user.credits,
+            "username": user.name,
+            "questions": new_interview.questions
+        }), 200
+
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     finally:
         db.close()
