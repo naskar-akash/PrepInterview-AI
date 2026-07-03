@@ -147,6 +147,7 @@ def generate_questions(role, experience, mode, projects, skills, resume_text, us
         
         user.credits -= 50
         db.commit()
+        db.refresh(user)
 
         new_interview = Interview(
             user_id=user_id,
@@ -165,6 +166,7 @@ def generate_questions(role, experience, mode, projects, skills, resume_text, us
         )
         db.add(new_interview)
         db.commit()
+        db.refresh(new_interview)
 
         return jsonify({
             "message": "Questions generated successfully",
@@ -179,3 +181,29 @@ def generate_questions(role, experience, mode, projects, skills, resume_text, us
         return jsonify({"error": str(e)}), 500
     finally:
         db.close()
+
+def submit_answer(interview_id, question_id, answer, time_taken):
+    db = SessionLocal()
+    try:
+        interview = db.query(Interview).filter(Interview.id == interview_id).first()
+        question = interview.questions[question_id] if interview else None
+        
+        # If no answer is submitted
+        if not answer:
+            question.score = 0
+            question.feedback = "You did not provide an answer."
+            question.answer = ""
+            db.commit()
+            return jsonify({"feedback": question.feedback}), 200
+        # If time exceeded
+        elif time_taken > question.timelimit:
+            question.score = 0
+            question.feedback = "Time exceeded. Answer will not be considered."
+            question.answer = answer
+            db.commit()
+            return jsonify({"feedback": question.feedback}), 200
+        else:
+            pass
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
