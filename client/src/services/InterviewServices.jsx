@@ -18,3 +18,19 @@ export const resumeUpload = async (resumeFile) => {
     throw error;
   }
 };
+
+export const generateQuestions = async (data) => {
+  try {
+    const result = await axios.post(
+      `${import.meta.env.VITE_SERVER_URL}/interview/generate-questions`,
+      data,
+      {
+        withCredentials: true,
+      },
+    );
+    return result;
+  } catch (error) {
+    console.error(error.response?.data?.message || "Error generating questions");
+    throw error;
+  }
+};

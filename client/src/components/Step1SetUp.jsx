@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { motion } from "motion/react";
 import { InterviewStep1Array } from "../assets/arrays/InterviewStep1Array";
 import {
@@ -8,9 +9,11 @@ import {
   FaMicrophoneAlt,
   FaChartLine,
 } from "react-icons/fa";
-import { resumeUpload } from "../services/InterviewServices";
+import { resumeUpload, generateQuestions } from "../services/InterviewServices";
 
 const Step1SetUp = ({ onStart }) => {
+  const {userData} = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const [role, setRole] = useState("");
   const [experience, setExperience] = useState("");
   const [mode, setMode] = useState("Technical");
@@ -40,6 +43,24 @@ const Step1SetUp = ({ onStart }) => {
       setAnalysing(false);
     }
   };
+
+  const handleStartInterview = async () => {
+    if (!role || !experience) return;
+    setLoading(true);
+    try {
+      const data = { role, experience, mode, projects, skills, resumeText };
+      const response = await generateQuestions(data);
+      console.log(response)
+      if(userData){
+        dispatch(setUserData(...userData, {credits: response.data.credits_left}));
+      }
+      setLoading(false);
+      // onStart(response.data);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
+  };  
 
   return (
     <motion.div
@@ -204,12 +225,13 @@ const Step1SetUp = ({ onStart }) => {
             )}
 
             <motion.button
-              disabled={!role || !experience}
+              onClick={handleStartInterview}
+              disabled={!role || !experience || loading}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
               className="w-full disabled:bg-gray-600 bg-green-600 hover:bg-green-700 text-white py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md"
             >
-              Start Interview
+             {loading ? "Starting Interview..." : "Start Interview"}
             </motion.button>
           </div>
         </motion.div>

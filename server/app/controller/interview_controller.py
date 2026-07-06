@@ -1,3 +1,4 @@
+import traceback
 from flask import jsonify
 from ..models.user_model import User
 from ..models.interview_model import Interview, Question
@@ -51,10 +52,10 @@ def upload_resume(file, user_id):
                 "content": resume_text
             }
         ]
-
-        ai_response = askAi(resume_field_message)
+        ai_response = askAi(resume_field_message, expect_json=True)
 
         if not ai_response or not isinstance(ai_response, dict):
+            os.remove(file_path)  # Clean up the uploaded file
             return {"message": "AI failed to extract resume fields."}, 500
         
         # delete file only after everything succeeds
@@ -75,7 +76,8 @@ def upload_resume(file, user_id):
         # delete file only after everything succeeds
         if os.path.exists(file_path):
             os.remove(file_path)
-        return {"error": str(e)}, 500
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
     finally:
         db.close()
 
@@ -138,9 +140,9 @@ def generate_questions(role, experience, mode, projects, skills, resume_text, us
         }
     ]
         
-        ai_questions = askAi(gen_question_message)
-        if not ai_questions or not ai_questions.strip():
-            return {"message": "AI returns empty response"}, 500
+        ai_questions = askAi(gen_question_message, expect_json=False)
+        if ai_questions is None:
+            return jsonify({"message": "AI request failed"}), 500
         questions_array = [q.strip() for q in ai_questions.splitlines() if q.strip()][:5]
         if len(questions_array) == 0:
             return {"message": "AI failed to generate questions."}, 500
@@ -154,16 +156,16 @@ def generate_questions(role, experience, mode, projects, skills, resume_text, us
             role=role,
             experience=experience,
             mode=mode,
-            resume_text=safe_resume,
-            questions = [
-                            {
-                                "question": q,
-                                "difficulty": ["easy", "easy", "medium", "medium", "hard"][idx],
-                                "timelimit": [60, 60, 90, 90, 120][idx],
-                            }
-                            for idx, q in enumerate(questions_array)
-                        ]
+            resume_text=safe_resume
         )
+        new_interview.questions = [
+            Question(
+                question=q,
+                difficulty=["easy", "easy", "medium", "medium", "hard"][idx],
+                timelimit=[60, 60, 90, 90, 120][idx]
+         )
+                for idx, q in enumerate(questions_array)
+        ]
         db.add(new_interview)
         db.commit()
         db.refresh(new_interview)
@@ -178,6 +180,7 @@ def generate_questions(role, experience, mode, projects, skills, resume_text, us
 
 
     except Exception as e:
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
     finally:
         db.close()
@@ -203,7 +206,122 @@ def submit_answer(interview_id, question_id, answer, time_taken):
             db.commit()
             return jsonify({"feedback": question.feedback}), 200
         else:
-            pass
+            # prompt to be sent to ai
+            answered_message = [
+        {
+            "role": "system",
+            "content": """
+            You are a real human interviewer evaluating a candidate's answer in a real interview.
+            Evaluate naturally and fairly, like a real person would. 
+
+            Score the answer in these areas( 0 to 10):
+
+            Strict rules:
+            1. Confidence - Does the answer sound clear, confident and well-presented?
+            2. Communication - Is the language simple, clear and easy to understand?
+            3. Correctness - Is the answer accurate, relevent and complete?
+
+            STRICT RULES:
+            - Be realistic and unbiased.
+            - Do not give random high scores.
+            - If the answer is weak, score low.
+            - If the answer is strong and detailed, score high.
+            - Consider clarity, structure and relevance.
+
+            CALCULATE:
+            finalscore = average of confidence, communication and correctness (rounded to nearest whole number).
+
+            Feedback rules:
+            - Write natural human feedback
+            - 10 to 15 words only.
+            - Sounds like real interview feedback.
+            - Can suggest improvement if needed.
+            - Do NOT repeat the question.
+            - Do NOT explain scoring.
+            - Keep tone professional and honest.
+
+            Return ONLY valid JSON in this format:
+            {
+              "confidence" : number,
+              "communication" : number,
+              "correctness" : number,
+              "finalscore" : number,
+              "feedback" : "short human feedback"
+            }
+    """
+        },
+        {
+            "role": "user",
+            "content": """
+                        Questtion: {question.question}
+                        Answer: {answer}
+    """
+        }
+    ]
+
+            ai_response = askAi(answered_message)
+            if not ai_response or not ai_response.strip():
+                return {"message": "AI returns empty response"}, 500
+            question.answer = answer
+            question.confidence = ai_response.confidence
+            question.communication = ai_response.communication
+            question.correctness = ai_response.correctness
+            question.score = ai_response.score
+            question.feedback = ai_response.feedback
+
+            db.commit()
+
+            return jsonify({"feedback": {ai_response.feedback}}), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"Failed to submit answer: {str(e)}"}), 500
+    finally:
+        db.close()
+
+def finish_interview(interview_id):
+    db = SessionLocal()
+    try:
+        interview = db.query(Interview).filter(Interview.id == interview_id).first()
+        if not interview:
+            return jsonify({"message": "Failed to find interview"}), 400
+        total_questions = len(interview.questions)
+        total_score = 0
+        total_confidence = 0
+        total_communication = 0
+        total_correctness = 0
+        for question in interview.questions:
+            total_score += question.score or 0
+            total_confidence += question.confidence or 0
+            total_communication += question.communication or 0
+            total_correctness += question.correctness or 0
+
+        final_score = round(total_score / total_questions) if total_questions else 0
+        avg_confidence = round(total_confidence / total_questions) if total_questions else 0
+        avg_communication = round(total_communication / total_questions) if total_questions else 0
+        avg_correctness = round(total_correctness / total_questions) if total_questions else 0
+        interview.final_score = final_score
+        interview.status = "Completed"
+        db.commit()
+
+        return jsonify({
+            "final_score": final_score,
+            "confidence": avg_confidence,
+            "communication": avg_communication,
+            "correctness": avg_correctness,
+            "question_wise_score": [
+                {
+                    "question": q.question,
+                    "score": q.score or 0,
+                    "feedback": q.feedback or "",
+                    "confidence": q.confidence or 0,
+                    "communication": q.communication or 0,
+                    "correctness": q.correctness or 0
+                }
+                for q in interview.questions
+            ]
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": f"Failed to get final score: {str(e)}"}), 500
+    finally:
+        db.close()

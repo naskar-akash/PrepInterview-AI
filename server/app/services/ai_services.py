@@ -1,3 +1,4 @@
+import re
 from dotenv import load_dotenv
 import os
 from openai import OpenAI
@@ -7,7 +8,7 @@ import json
 
 load_dotenv()
 
-def askAi(message):
+def askAi(message, expect_json):
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     try:
@@ -16,9 +17,13 @@ def askAi(message):
             input= message
         )
         content = response.output_text
+        content = re.sub(r"^```(?:json)?\s*", "", content)
+        content = re.sub(r"\s*```$", "", content)
         if not content or content.strip() == "":
             return jsonify({"error": "AI did not return a valid response"}), 500
-        return json.loads(content)
+        return json.loads(content) if expect_json else content
+    
     except Exception as e:
-        return jsonify({"OPENAI error": str(e)}), 500
+        print(e)
+        return None
     
