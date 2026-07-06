@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 import { motion } from "motion/react";
 import { InterviewStep1Array } from "../assets/arrays/InterviewStep1Array";
 import {
@@ -52,10 +53,10 @@ const Step1SetUp = ({ onStart }) => {
       const response = await generateQuestions(data);
       console.log(response)
       if(userData){
-        dispatch(setUserData(...userData, {credits: response.data.credits_left}));
+        dispatch(setUserData({...userData, credits: response.data.credits_left}));
       }
       setLoading(false);
-      // onStart(response.data);
+      onStart(response.data);
     } catch (error) {
       console.error(error);
       setLoading(false);

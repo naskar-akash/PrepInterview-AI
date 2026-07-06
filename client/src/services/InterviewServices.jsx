@@ -26,7 +26,7 @@ export const generateQuestions = async (data) => {
       data,
       {
         withCredentials: true,
-      },
+      }
     );
     return result;
   } catch (error) {

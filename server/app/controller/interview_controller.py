@@ -158,14 +158,13 @@ def generate_questions(role, experience, mode, projects, skills, resume_text, us
             mode=mode,
             resume_text=safe_resume
         )
-        new_interview.questions = [
-            Question(
-                question=q,
-                difficulty=["easy", "easy", "medium", "medium", "hard"][idx],
-                timelimit=[60, 60, 90, 90, 120][idx]
-         )
-                for idx, q in enumerate(questions_array)
-        ]
+        new_interview.questions = [ 
+            Question( 
+                question=q, 
+                difficulty=["easy", "easy", "medium", "medium", "hard"][idx], 
+                timelimit=[60, 60, 90, 90, 120][idx] 
+                ) for idx, q in enumerate(questions_array) 
+            ]
         db.add(new_interview)
         db.commit()
         db.refresh(new_interview)
@@ -175,7 +174,15 @@ def generate_questions(role, experience, mode, projects, skills, resume_text, us
             "interview_id": new_interview.id,
             "credits_left": user.credits,
             "username": user.name,
-            "questions": new_interview.questions
+            "questions": [
+                    {
+                        "id": q.id,
+                        "question": q.question,
+                        "difficulty": q.difficulty,
+                        "timelimit": q.timelimit
+                    }
+                for q in new_interview.questions
+        ]
         }), 200
 
 
