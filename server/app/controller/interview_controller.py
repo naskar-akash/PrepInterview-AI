@@ -170,7 +170,7 @@ def generate_questions(role, experience, mode, projects, skills, resume_text, us
         db.refresh(new_interview)
 
         return jsonify({
-            "message": "Questions generated successfully",
+            "message": "Questions generated successfully. 50 credits deducted.",
             "interview_id": new_interview.id,
             "credits_left": user.credits,
             "username": user.name,
