@@ -266,21 +266,24 @@ def submit_answer(interview_id, question_id, answer, time_taken):
         }
     ]
 
-            ai_response = askAi(answered_message)
-            if not ai_response or not ai_response.strip():
+            ai_response = askAi(answered_message, expect_json=True)
+            if not ai_response:
+                traceback.print_exc()
                 return {"message": "AI returns empty response"}, 500
+            print(f"AI Response value: {ai_response}")
             question.answer = answer
-            question.confidence = ai_response.confidence
-            question.communication = ai_response.communication
-            question.correctness = ai_response.correctness
-            question.score = ai_response.score
-            question.feedback = ai_response.feedback
+            question.confidence = ai_response["confidence"]
+            question.communication = ai_response["communication"]
+            question.correctness = ai_response["correctness"]
+            question.score = ai_response["finalscore"]
+            question.feedback = ai_response["feedback"]
 
             db.commit()
 
-            return jsonify({"feedback": {ai_response.feedback}}), 200
+            return jsonify({"feedback": ai_response["feedback"]}), 200
 
     except Exception as e:
+        traceback.print_exc()
         return jsonify({"error": f"Failed to submit answer: {str(e)}"}), 500
     finally:
         db.close()

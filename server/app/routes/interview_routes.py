@@ -33,9 +33,10 @@ def submit_answer_route(cur_user=None):
     data = request.get_json()
     interview_id = data.get('interview_id')
     question_id = data.get('question_id')
+    answer = data.get('answer')
     time_taken = data.get('time_taken')
 
-    response, status_code = submit_answer(interview_id, question_id, time_taken)
+    response, status_code = submit_answer(interview_id, question_id, answer, time_taken)
     return response, status_code
 
 @interview_bp.route('/finish-interview', methods=['POST'])

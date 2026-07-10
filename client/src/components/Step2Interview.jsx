@@ -4,10 +4,11 @@ import femaleVideo from "../assets/videos/female-ai.mp4";
 import Timer from "../components/Timer.jsx";
 import { motion } from "motion/react";
 import { FaMicrophone, FaMicrophoneSlash } from "react-icons/fa";
+import { submitAnswer } from "../services/InterviewServices.jsx";
 
 const Step2Interview = ({ interviewData, onFinish }) => {
   const { interview_id, questions, username } = interviewData;
-  const [isMicOn, setIsMicOn] = useState(false);
+  const [isMicOn, setIsMicOn] = useState(true);
   const [isIntroPhase, setIsIntroPhase] = useState(true);
   const [isAiPlaying, setIsAiPlaying] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -87,16 +88,21 @@ const Step2Interview = ({ interviewData, onFinish }) => {
       utterance.pitch = 1.05
       utterance.volume = 1
       
-      // Play video when ai start talking
+      // Play video when audio starts
       utterance.onstart = () => {
         setIsAiPlaying(true)
+        stopMic();
         videoRef.current?.play();
       }
-      // Stop video
+      // Stop video when audio stops
       utterance.onend = () => {
         videoRef.current?.pause()
         videoRef.current.currentTime = 0;
         setIsAiPlaying(false);
+
+        if(isMicOn){
+          startMic();
+        }
 
         // Setting subtitles
         setTimeout(() => {
@@ -126,7 +132,11 @@ const Step2Interview = ({ interviewData, onFinish }) => {
         if(currentIndex === questions.length - 1){
           await speakText(`Alright, this one might be a bit challenging. Take your time and give it your best.`);
         }
-        await speakText(currentQuestion.question);
+        await speakText(currentQuestion.question); // Speaking a question
+        // automatically startts mic after telling a question
+        if (isMicOn){
+          startMic();
+        }
       }
     }
     runIntro()
@@ -149,6 +159,66 @@ const Step2Interview = ({ interviewData, onFinish }) => {
     return ()=> clearInterval(timer);
 
   }, [isIntroPhase, currentIndex])
+
+  // voice to text function
+  useEffect(() => {
+    if (!("webkitSpeechRecognition" in window)) return;
+    const recognition = new window.webkitSpeechRecognition();
+    recognition.lang = "en-US"
+    recognition.continuous = true;
+    recognition.interimResults = false;
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[event.results.length -1][0].transcript;
+      setAnswer((prev) => prev + " " + transcript);
+    };
+    recognitionRef.current = recognition;
+  }, [])
+
+  // To start and stop mic
+  const startMic = () => {
+    if(recognitionRef.current && !isAiPlaying){
+      try{
+        recognitionRef.current.start();
+      }catch {}
+    }
+  }
+  const stopMic = () => {
+    if(recognitionRef.current){
+      recognitionRef.current.stop();
+    }
+  }
+  const toggleMic = () => {
+    if(isMicOn){
+      stopMic();
+    }else {
+      startMic();
+    }
+    setIsMicOn(!isMicOn)
+  }
+
+  const handleSubmitAnswer = async() => {
+    if(isSubmitting) return;
+    stopMic()
+    setIsSubmitting(true);
+
+    try {
+      const data = {
+        interview_id,
+        question_id: currentIndex,
+        answer,
+        time_taken: currentQuestion.timelimit - timeLeft,
+      }
+      const result = await submitAnswer(data)
+      console.log(result)
+      setFeedback(result.data.feedback)
+      speakText(result.data.feedback)
+      setIsSubmitting(false)
+    } catch (error) {
+      console.log(error)
+      setIsSubmitting(false)
+    }
+  }
   
   
 
@@ -233,22 +303,20 @@ const Step2Interview = ({ interviewData, onFinish }) => {
             <motion.button
               whileTap={{ scale: 0.9 }}
               className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-full bg-black text-white shadow-lg"
-              onClick={() => {
-                setIsMicOn(!isMicOn);
-                console.log(`Mic is now ${!isMicOn ? "ON" : "OFF"}`);
-              }}
+              onClick={toggleMic}
+                
             >
               {isMicOn ? (
-                <FaMicrophoneSlash size={18} />
-              ) : (
                 <FaMicrophone size={18} />
+              ) : (
+                <FaMicrophoneSlash size={18} />
               )}
             </motion.button>
 
             <motion.button
               whileTap={{ scale: 0.95 }}
               className="flex-1 bg-linear-to-r from-emerald-600 to-teal-600 text-white font-semibold py-3 sm:py-4 rounded-2xl shadow-lg transition hover:opacity-90"
-              onClick={() => console.log("object")}
+              onClick={handleSubmitAnswer}
             >
               Submit Answer
             </motion.button>

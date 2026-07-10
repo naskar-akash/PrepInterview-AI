@@ -34,3 +34,18 @@ export const generateQuestions = async (data) => {
     throw error;
   }
 };
+
+export const submitAnswer = async (data) => {
+  try {
+    const result = await axios.post(
+      `${import.meta.env.VITE_SERVER_URL}/interview/submit-answer`,
+      data,
+      {
+        withCredentials: true,
+      }
+    );
+  } catch (error) {
+    console.error(error.response?.data?.message || "Error submitting answer");
+    throw error;
+  }
+}
