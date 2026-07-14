@@ -259,13 +259,12 @@ def submit_answer(interview_id, question_id, answer, time_taken):
         },
         {
             "role": "user",
-            "content": """
-                        Questtion: {question.question}
+            "content": f"""
+                        Question: {question.question}
                         Answer: {answer}
     """
         }
     ]
-
             ai_response = askAi(answered_message, expect_json=True)
             if not ai_response:
                 traceback.print_exc()

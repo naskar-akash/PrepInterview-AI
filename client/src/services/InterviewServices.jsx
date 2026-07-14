@@ -44,8 +44,26 @@ export const submitAnswer = async (data) => {
         withCredentials: true,
       }
     );
+    return result.data;
   } catch (error) {
     console.error(error.response?.data?.message || "Error submitting answer");
+    throw error;
+  }
+}
+
+
+export const finishInterview = async (interview_id) => {
+  try {
+    const result = await axios.post(
+      `${import.meta.env.VITE_SERVER_URL}/interview/finish-interview`,
+      interview_id,
+      {
+        withCredentials: true,
+      }
+    );
+    return result.data;
+  } catch (error) {
+    console.error(error.response?.data?.message || "Error finishing interview");
     throw error;
   }
 }

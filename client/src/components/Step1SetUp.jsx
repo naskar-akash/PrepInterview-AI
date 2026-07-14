@@ -51,7 +51,7 @@ const Step1SetUp = ({ onStart }) => {
     try {
       const data = { role, experience, mode, projects, skills, resumeText };
       const response = await generateQuestions(data);
-      console.log(response)
+      // console.log(response)
       if(userData){
         dispatch(setUserData({...userData, credits: response.data.credits_left}));
       }
