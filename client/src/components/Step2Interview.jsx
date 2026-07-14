@@ -153,7 +153,6 @@ const Step2Interview = ({ interviewData, onFinish }) => {
   useEffect(() => {
     if (isIntroPhase) return;
     if (!currentQuestion) return;
-    if (isSubmitting) return;
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
@@ -164,7 +163,14 @@ const Step2Interview = ({ interviewData, onFinish }) => {
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [isIntroPhase, currentIndex, isSubmitting]);
+  }, [isIntroPhase, currentIndex]);
+  // Addition setup for timer wheel
+  useEffect(() => {
+    if(!isIntroPhase && currentQuestion){
+      setTimeLeft(currentQuestion.timelimit || 60);
+    }
+  }, [currentIndex]);
+  
 
   // voice to text function
   useEffect(() => {
@@ -227,11 +233,11 @@ const Step2Interview = ({ interviewData, onFinish }) => {
   };
 
   // Function to go to the next question
-  const handleNextQuestion = async (params) => {
+  const handleNextQuestion = async () => {
     setAnswer("");
     setFeedback("");
-    if(currentIndex+1 >= questions.length){
-      finishInterview()
+    if(currentIndex + 1 >= questions.length){
+      finishInterviewFunc()
       return;
     }
 
@@ -243,10 +249,11 @@ const Step2Interview = ({ interviewData, onFinish }) => {
   }
 
   // function to finish the Interview
-  const finishInterview = async () => {
+  const finishInterviewFunc = async () => {
     stopMic()
     setIsMicOn(false)
     try {
+      console.log(interview_id)
       const result = await finishInterview(interview_id)
       console.log(result)
       onFinish(result)

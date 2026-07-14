@@ -269,7 +269,7 @@ def submit_answer(interview_id, question_id, answer, time_taken):
             if not ai_response:
                 traceback.print_exc()
                 return {"message": "AI returns empty response"}, 500
-            print(f"AI Response value: {ai_response}")
+            # print(f"AI Response value: {ai_response}")
             question.answer = answer
             question.confidence = ai_response["confidence"]
             question.communication = ai_response["communication"]

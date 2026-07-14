@@ -56,7 +56,7 @@ export const finishInterview = async (interview_id) => {
   try {
     const result = await axios.post(
       `${import.meta.env.VITE_SERVER_URL}/interview/finish-interview`,
-      interview_id,
+      {interview_id,},
       {
         withCredentials: true,
       }
