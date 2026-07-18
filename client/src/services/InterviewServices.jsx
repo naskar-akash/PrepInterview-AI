@@ -67,3 +67,18 @@ export const finishInterview = async (interview_id) => {
     throw error;
   }
 }
+
+export const getInterviews = async () => {
+  try {
+    const result = await axios.get(
+      `${import.meta.env.VITE_SERVER_URL}/interview/get-interviews`,
+      {
+        withCredentials: true,
+      }
+    );
+    return result.data;
+  } catch (error) {
+    console.error(error.response?.data?.message || "Error getting all interviews");
+    throw error;
+  }
+}

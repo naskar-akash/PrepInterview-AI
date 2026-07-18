@@ -1,5 +1,6 @@
 import traceback
 from flask import jsonify
+from sqlalchemy import desc
 from ..models.user_model import User
 from ..models.interview_model import Interview, Question
 from ..db import SessionLocal
@@ -332,5 +333,69 @@ def finish_interview(interview_id):
 
     except Exception as e:
         return jsonify({"error": f"Failed to get final score: {str(e)}"}), 500
+    finally:
+        db.close()
+
+def get_all_interviews(userId):
+    db = SessionLocal()
+    try:
+        interviews = db.query(
+                        Interview.id,
+                        Interview.role,
+                        Interview.experience,
+                        Interview.mode,
+                        Interview.final_score,
+                        Interview.status,
+                        Interview.uploaded_at,
+                    ).filter(Interview.user_id == userId).order_by(Interview.uploaded_at.desc()).all()
+        result = [
+            {
+                "id": interview.id,
+                "role": interview.role,
+                "experience": interview.experience,
+                "mode": interview.mode,
+                "final_score": interview.final_score,
+                "status": interview.status,
+                "uploaded_at": interview.uploaded_at,
+            }
+            for interview in interviews
+        ]
+        return jsonify(result),200
+
+    except Exception as e:
+        return jsonify({"error": f"Failed to get all interviews: {str(e)}"}), 500
+    finally:
+        db.close()
+
+def get_interview_by_id(interview_id,user_id):
+    db = SessionLocal()
+    try:
+        interview = db.query(Interview).filter(Interview.id == interview_id, Interview.user_id == user_id).first()
+        if not interview:
+            return jsonify({"message": "Interview not found"}),404
+        total_questions = len(interview.questions)
+        total_confidence = 0
+        total_communication = 0
+        total_correctness = 0
+        for question in interview.questions:
+            total_confidence += question.confidence or 0
+            total_communication += question.communication or 0
+            total_correctness += question.correctness or 0
+
+        avg_confidence = round(total_confidence / total_questions) if total_questions else 0
+        avg_communication = round(total_communication / total_questions) if total_questions else 0
+        avg_correctness = round(total_correctness / total_questions) if total_questions else 0
+
+        return jsonify({
+            "final_score": interview.final_score,
+            "confidence": avg_confidence,
+            "communication": avg_communication,
+            "correctness": avg_correctness,
+            "question_wise_score": interview.questions
+        }), 200
+     
+    
+    except Exception as e:
+        return jsonify({"error": f"Failed to get the interview report: {str(e)}"}), 500
     finally:
         db.close()

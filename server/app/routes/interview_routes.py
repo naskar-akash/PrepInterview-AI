@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from ..controller.interview_controller import upload_resume, generate_questions, submit_answer, finish_interview
+from ..controller.interview_controller import upload_resume, generate_questions, submit_answer, finish_interview, get_all_interviews, get_interview_by_id
 from ..middleware.is_auth import is_auth
 
 interview_bp = Blueprint('interview', __name__, url_prefix='/interview')
@@ -46,6 +46,18 @@ def finish_interview_route(cur_user=None):
     interview_id = data.get('interview_id')
 
     response, status_code = finish_interview(interview_id)
+    return response, status_code
+
+@interview_bp.route('/get-interviews', methods=['GET'])
+@is_auth
+def get_interviews(cur_user=None):
+    response, status_code = get_all_interviews(cur_user.id)
+    return response, status_code
+
+@interview_bp.route('/get-report/<int:interview_id>', methods=['GET'])
+@is_auth
+def get_interview(interview_id,cur_user=None):
+    response, status_code = get_interview_by_id(interview_id, cur_user.id)
     return response, status_code
    
    

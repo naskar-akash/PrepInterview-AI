@@ -253,7 +253,6 @@ const Step2Interview = ({ interviewData, onFinish }) => {
     stopMic()
     setIsMicOn(false)
     try {
-      console.log(interview_id)
       const result = await finishInterview(interview_id)
       console.log(result)
       onFinish(result)

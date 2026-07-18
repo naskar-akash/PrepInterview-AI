@@ -6,6 +6,9 @@ import { getCurrentUser } from './services/userServices'
 import {useDispatch} from 'react-redux' 
 import { setUserData } from './redux/userSlice'
 import InterviewPage from "./pages/InterviewPage"
+import InterviewHistory from './pages/InterviewHistory'
+import InterviewReport from './pages/InterviewReport'
+import Pricing from './pages/Pricing'
 
 
 const App = ({isModel = false}) => {
@@ -33,6 +36,9 @@ const App = ({isModel = false}) => {
       <Route path="/" element={<Home />} />
       <Route path="/auth" element={<Auth />} /> 
       <Route path="/interview" element={<InterviewPage />} /> 
+      <Route path="/history" element={<InterviewHistory />} /> 
+      <Route path="/report/:id" element={<InterviewReport />} /> 
+      <Route path="/pricing" element={<Pricing />} /> 
     </Routes>
   )
 }
