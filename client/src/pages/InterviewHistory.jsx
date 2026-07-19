@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getInterviews } from "../services/InterviewServices";
+import { deleteInterview, getInterviews } from "../services/InterviewServices";
 import { FaArrowLeft } from "react-icons/fa";
+import { MdDeleteForever } from "react-icons/md";
 
 const InterviewHistory = () => {
   const [interviews, setInterviews] = useState([]);
@@ -15,6 +16,15 @@ const InterviewHistory = () => {
     };
     getAllInterviews();
   }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await deleteInterview(id);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-olive-50 to-emerald-50 py-10">
@@ -47,7 +57,7 @@ const InterviewHistory = () => {
           <div className="grid gap-3">
             {interviews.map((item, index) => (
               <div
-              onClick={()=>navigate(`/report/${item.id}`)}
+                onClick={() => navigate(`/report/${item.id}`)}
                 key={index}
                 className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-100"
               >
@@ -65,7 +75,7 @@ const InterviewHistory = () => {
                     </p>
                   </div>
                   {/* right */}
-                  <div className="flex items-center gap-6">
+                  <div className="flex justify-evenly items-center gap-6">
                     {/* score */}
                     <div className="text-right">
                       <p className="text-xl font-bold text-emerald-600">
@@ -74,11 +84,21 @@ const InterviewHistory = () => {
                       <p className="text-xs text-gray-400">Overall score</p>
                     </div>
                     {/* status badge */}
-                    <span
-                      className={`px-4 py-1 rounded-full text-xs font-medium ${item.status === "Completed" ? "bg-green-200 text-emerald-700" : "bg-orange-200 text-orange-700"}`}
-                    >
-                      {item.status}
-                    </span>
+                    <div className="flex md:flex-col items-center gap-1">
+                      <span
+                        className={`px-4 py-1 rounded-full text-xs font-medium ${item.status === "Completed" ? "bg-green-200 text-emerald-700" : "bg-orange-200 text-orange-700"}`}
+                      >
+                        {item.status}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                           e.stopPropagation();
+                          handleDelete(item.id)}}
+                        className="px-2 py-1 text-red-700"
+                      >
+                        <MdDeleteForever className="size-6 hover:size-7" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

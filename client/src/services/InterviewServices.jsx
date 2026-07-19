@@ -82,3 +82,17 @@ export const getInterviews = async () => {
     throw error;
   }
 }
+
+export const deleteInterview = async (id) => {
+  try {
+    const result = await axios.delete(`${import.meta.env.VITE_SERVER_URL}/interview/delete-interview/${id}`,
+      {
+        withCredentials: true,
+      }
+    )
+    return result.data;
+  } catch (error) {
+     console.error(error.response?.data?.message || "Error deleting interviews");
+    throw error;
+  }
+}

@@ -399,3 +399,18 @@ def get_interview_by_id(interview_id,user_id):
         return jsonify({"error": f"Failed to get the interview report: {str(e)}"}), 500
     finally:
         db.close()
+
+def delete_interview(interview_id,user_id):
+    db = SessionLocal()
+    try:
+        interview = db.query(Interview).filter(Interview.id == interview_id, Interview.user_id == user_id).first()
+        if not interview:
+            return jsonify({"message": "Interview not found"}),404
+        db.delete(interview)
+        db.commit()
+        return jsonify({"message": "Interview record deleted successfully!"}),200
+    
+    except Exception as e:
+        return jsonify({"error":f"Error deleting records: {str(e)}"}),500
+    finally:
+        db.close()
