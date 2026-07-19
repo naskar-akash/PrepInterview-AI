@@ -391,11 +391,22 @@ def get_interview_by_id(interview_id,user_id):
             "confidence": avg_confidence,
             "communication": avg_communication,
             "correctness": avg_correctness,
-            "question_wise_score": interview.questions
+            "question_wise_score": [
+                {
+                    "question": q.question,
+                    "score": q.score or 0,
+                    "feedback": q.feedback or "",
+                    "confidence": q.confidence or 0,
+                    "communication": q.communication or 0,
+                    "correctness": q.correctness or 0
+                }
+                for q in interview.questions
+            ]
         }), 200
      
     
     except Exception as e:
+        traceback.print_exc()
         return jsonify({"error": f"Failed to get the interview report: {str(e)}"}), 500
     finally:
         db.close()

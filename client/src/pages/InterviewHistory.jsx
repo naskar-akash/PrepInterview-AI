@@ -11,7 +11,7 @@ const InterviewHistory = () => {
   useEffect(() => {
     const getAllInterviews = async () => {
       const response = await getInterviews();
-      console.log(response);
+      // console.log(response);
       setInterviews(response);
     };
     getAllInterviews();

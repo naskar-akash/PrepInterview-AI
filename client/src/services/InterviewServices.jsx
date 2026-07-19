@@ -83,6 +83,21 @@ export const getInterviews = async () => {
   }
 }
 
+export const getIterviewById = async (id) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_SERVER_URL}/interview/get-report/${id}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(error.response?.data?.message || "Error getting interview by id");
+    throw error;
+  }
+}
+
 export const deleteInterview = async (id) => {
   try {
     const result = await axios.delete(`${import.meta.env.VITE_SERVER_URL}/interview/delete-interview/${id}`,

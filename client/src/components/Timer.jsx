@@ -32,7 +32,6 @@ const Timer = ({ timeLeft, totalTime}) => {
           pathTransitionDuration: 0.5,
         })}
       />
-      
     </div>
   )
 }
