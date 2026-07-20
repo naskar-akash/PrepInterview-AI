@@ -4,6 +4,15 @@ import { FaArrowLeft } from "react-icons/fa";
 import { motion } from "motion/react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import {
+  ResponsiveContainer,
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const Step3Report = ({ report }) => {
   const navigate = useNavigate();
@@ -21,13 +30,14 @@ const Step3Report = ({ report }) => {
     confidence = 0,
     communication = 0,
     correctness = 0,
-    questionWiseScore = [],
+    question_wise_score = [],
   } = report;
 
-  const questionScoreData = questionWiseScore.map((score, index) => ({
+  const questionScoreData = question_wise_score.map((score, index) => ({
     name: `Q ${index + 1}`,
     score: score.score || 0,
   }));
+
 
   const skills = [
     { label: "Confidence", value: confidence },
@@ -139,7 +149,78 @@ const Step3Report = ({ report }) => {
           </motion.div>
         </div>
         {/* Right area */}
-        <div></div>
+        <div className="lg:col-span-2 space-y-6">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white rounded-2xl sm:rounded-3xl shadow-lg p-5 sm:p-8"
+          >
+            <h3 className="font-semibold text-base sm:text-lg text-gray-700 mb-4 sm:mb-6">
+              Performance Analysis
+            </h3>
+            <div className="h-64 sm:h-74">
+              {/* Graph */}
+              {questionScoreData.length === 0 ? (<div className="text-sm text-gray-500">No data to show in the graph</div>) : (
+                <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={questionScoreData}
+                  margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name"/>
+                  <YAxis domain={[0,10]} label="Score"  />
+                  <Tooltip />
+                  <Area
+                    type="monotone"
+                    dataKey="score"
+                    stroke="#10b981"
+                    fill="url(#colorPv)"
+                    fillOpacity={1}
+                  />
+                </AreaChart>
+                </ResponsiveContainer>)}
+            </div>
+          </motion.div>
+          <motion.div
+          initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white rounded-2xl sm:rounded-3xl shadow-lg p-5 sm:p-8">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-6">Questionwise Breakedown</h3>
+              <div className="space-y-6">
+                {question_wise_score.map((q,index)=>(
+                  <div key={index} className="bg-gray-50 p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-gray-200">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-4">
+                      <div>
+                        <p className="text-xs text-gray-400">Question {index + 1}</p>
+                        <p className="font-semibold text-gray-800 text-sm sm:text-base leading-relaxed">{q.question || "Question is not available"}</p>
+                      </div>
+                      <div className="bg-green-100 text-green-600 px-3 py-1 rounded-full font-bold text-xs sm:text-sm w-fit">
+                        {q.score ?? 0}/10
+                      </div>
+                    </div>
+                    <div className="bg-green-100 border-green-200 p-4 rounded-lg">
+                      <p className="text-xs text-green-600 font-semibold mb-1">AI Feedback</p>
+                      <p className="text-sm text-gray-500 leading-relaxed">
+                        {q.feedback && q.feedback.trim() !== "" ? q.feedback : "No feedback available."}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+        </div>
       </div>
     </div>
   );
