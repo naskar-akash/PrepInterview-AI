@@ -3,10 +3,23 @@ import { FaArrowLeft, FaCheckCircle } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import { plansArray } from '../assets/arrays/plansArray';
 import { motion } from "motion/react";
+import { createOrder } from '../services/PaymentServices';
 
 const Pricing = () => {
   const navigate = useNavigate()
   const [selectedPlan, setSelectedPlan] = useState("free");
+  const [loadingPlan, setLoadingPlan] = useState(null)
+
+  const handlePayment = async (plan) => {
+    try {
+      const data = {plan_id: plan.id, amount: plan.amount, credits: plan.credits}
+      console.log(data)
+      const result = await createOrder(data)
+      console.log(result)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
 
   return (
@@ -65,7 +78,7 @@ const Pricing = () => {
                   ))}
                 </div>
                 {!plan.default && 
-                <button className={`w-full mt-8 py-3 rounded-xl font-semibold transition ${
+                <button onClick={()=>handlePayment(plan)} className={`w-full mt-8 py-3 rounded-xl font-semibold transition ${
                   isSelected ? "bg-emerald-600 text-white hover:opacity-90" : "bg-gray-100 text-gray-700 hover:bg-emerald-50"
                 }`}>
                   {isSelected ? "Proceed to Pay" : "Select Plan"}

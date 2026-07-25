@@ -3,6 +3,7 @@ export const plansArray = [
         id: "free",
         name: "Free",
         price: "₹0",
+        amount: 0,
         credits: 100,
         description: "Perfect for beginners starting interview preparation.",
         features: [
@@ -17,6 +18,7 @@ export const plansArray = [
         id: "basic",
         name: "Starter Pack",
         price: "₹100",
+        amount: 100,
         credits: 150,
         description: "Great for focused practice and skill improvement.",
         features: [
@@ -30,6 +32,7 @@ export const plansArray = [
         id: "Pro",
         name: "Pro Pack",
         price: "₹500",
+        amount: 500,
         credits: 650,
         description: "Best value for serious job preparation.",
         features: [
