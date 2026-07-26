@@ -14,7 +14,7 @@ def create_order_route(cur_user=None):
     response,status_code = create_order(cur_user.id, plan_id, amount, credits)
     return response, status_code
 
-@payment_bp.route('/verify', methods=['POST'])
+@payment_bp.route('/verify-order', methods=['POST'])
 @is_auth
 def verify_payment_route(cur_user=None):
     data = request.get_json()

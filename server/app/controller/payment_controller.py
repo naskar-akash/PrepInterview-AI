@@ -35,11 +35,10 @@ def verify_payment(razorpay_order_id, razorpay_payment_id, razorpay_signature):
             'razorpay_signature': razorpay_signature
         }
         client.utility.verify_payment_signature(params_dict)
-        payment = db.query(Payment).filter(razorpay_order_id=razorpay_order_id).first()
+        payment = db.query(Payment).filter(Payment.razorpay_order_id == razorpay_order_id).first()
+        print(f"payment: {payment}")
         if payment is None:
             return jsonify({"message":"Payment not found"}),404
-        # CAPTURE THE PAYMENT: This prevents the auto-refund
-        client.payment.capture(razorpay_payment_id, payment.amount*100)
 
         payment.status = "paid"
         payment.razorpay_payment_id = razorpay_payment_id
@@ -49,7 +48,14 @@ def verify_payment(razorpay_order_id, razorpay_payment_id, razorpay_signature):
         user.credits += payment.credits
         db.commit()
 
-        return jsonify({"message":"Payment verified successfully", "user":user}),200
+        return jsonify({
+            "message":"Payment successful!", 
+            "user": {
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "credits": user.credits
+            }}),200
         
     except Exception as e:
         return jsonify({"error": f"Error in verifying razorpay payment: {str(e)}"}),500
