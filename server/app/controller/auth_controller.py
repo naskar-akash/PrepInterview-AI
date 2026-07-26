@@ -37,8 +37,8 @@ def google_auth():
                 "token",
                 token,
                 httponly=True,
-                secure=False,     
-                samesite="Lax",                           
+                secure=True,     
+                samesite="none",                           
                 max_age=60*60*24*7  
             )
             return response, 200
