@@ -8,6 +8,8 @@ PrepInterview-AI is an AI-assisted interview preparation platform that helps can
 
 The platform analyzes a user's resume or asked for role and experience, generates role-specific interview questions, conducts mock interview sessions, evaluates responses using AI, and provides actionable feedback to improve confidence and interview performance.
 
+---
+
 ## Features
 
 ### Resume Analysis
@@ -46,6 +48,8 @@ Your Preformance report will be prepared on the basis of:
 - Secure payment verification
 - Credit balance management
 
+---
+
 ## Tech Stack
 
 - Frontend: React JS, Tailwind CSS
@@ -54,27 +58,7 @@ Your Preformance report will be prepared on the basis of:
 - AI: OpenAI API
 - Payment Gateway: Razorpay
 
-## Getting Started
-
-### Prerequisites
-
-- Git
-- A modern code editor such as Visual Studio Code
-- Dependencies required by your project
-
-### Installation
-
-```bash
-git clone <repository-url>
-cd PrepInterview-AI
-# Install project dependencies here
-```
-
-### Running the Project
-
-```bash
-# Add the command to start your app here
-```
+---
 
 ## 📂 Project Structure
 
@@ -107,8 +91,91 @@ PrepInterview-AI
 
 ```
 
+---
+
+##  Getting Started
+
+Follow these steps to set up the project on your local machine.
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/naskar-akash/PrepInterview-AI.git
+cd PrepInterview-AI
+```
+
+### 2. Install Dependencies
+
+#### Frontend
+
+```bash
+cd client
+npm install
+```
+
+#### Backend
+
+```bash
+cd ../server
+
+# Create virtual environment
+python -m venv .venv
+
+# Activate virtual environment
+
+# Windows
+.venv\Scripts\activate
+
+# Install Python packages
+pip install -r requirements.txt
+```
+
+### 3. Configure Environment Variables
+
+Create a `.env` file inside both the **client** and **server** directories.
+
+#### Server (.env)
+
+```env
+TIDB_CONNECTION_STRING=tidb_connection_string
+SECRET_KEY=your_secret_key
+TIDB_PASSWORD=your_tidb_password
+FRONTEND_URL=your_frontend_url
+PORT=your_port
+HOST=your_host
+OPENAI_API_KEY=your_openai_api_key
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_secret
+```
+
+#### Client (.env)
+
+```env
+VITE_SERVER_URL=your_server_url
+VITE_FIREBASE_API_KEY=firebase_api_key
+VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
+VITE_RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+```
+
+### 4. Start the Backend
+
+```bash
+cd server
+python main.py
+```
+
+### 5. Start the Frontend
+
+Open a new terminal.
+
+```bash
+cd client
+npm run dev
+```
+
+You're now ready to use **PrepInterview-AI** 🎉
 
 ## Developed by
 
 This project is developed by Akash Naskar.
-- Linkedin: `https://www.linkedin.com/in/akash-naskar-82b332373/`
+*Visit my [Linkedin profile](https://www.linkedin.com/in/akash-naskar-82b332373/) to explore more projects.*
