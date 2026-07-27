@@ -175,6 +175,22 @@ npm run dev
 
 You're now ready to use **PrepInterview-AI** 🎉
 
+---
+
+## Media
+
+### Screenshots
+
+![Upload Resume](./assets/upload_resume.png)
+
+### Videos
+
+![HomePage_demo.mp4](./assets/home_demo.mp4)
+
+![InterviewPage_demo.mp4](./assets/interview_demo.mp4)
+
+---
+
 ## Developed by
 
 This project is developed by Akash Naskar.
