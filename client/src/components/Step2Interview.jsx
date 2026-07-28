@@ -39,11 +39,6 @@ const Step2Interview = ({ interviewData, onFinish }) => {
           voice.name.toLowerCase().includes("zira") ||
           voice.name.toLowerCase().includes("female"),
       );
-      if (femaleVoice) {
-        setSelectedVoice(femaleVoice);
-        setVoiceGender("female");
-        return;
-      }
       // Try known male voices
       const maleVoice = voices.find(
         (voice) =>
@@ -53,14 +48,25 @@ const Step2Interview = ({ interviewData, onFinish }) => {
           voice.name.toLowerCase().includes("mark") ||
           voice.name.toLowerCase().includes("male"),
       );
-      if (maleVoice) {
-        setSelectedVoice(maleVoice);
-        setVoiceGender("male");
-        return;
+      // Store available voices
+      const voiceAvailable = [];
+      if (femaleVoice) {
+        voiceAvailable.push({voice: femaleVoice, gender: "female"});
       }
-      // Fallback: first voice (female voice)
+      if (maleVoice) {
+        voiceAvailable.push({voice: maleVoice, gender: "male"});
+      }
+      // Randomly choose one
+      if (voiceAvailable.length > 0) {
+        const random = voiceAvailable[Math.floor(Math.random() * voiceAvailable.length)];
+        console.log("random:",Math.floor(Math.random() * voiceAvailable.length))
+        console.log("voiceAvailable:", voiceAvailable)
+        setSelectedVoice(random.voice);
+        setVoiceGender(random.gender);
+      } else {
       setSelectedVoice(voices[0]);
       setVoiceGender("female");
+      }
     };
 
     loadVoices();
