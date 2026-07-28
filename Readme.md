@@ -191,6 +191,12 @@ You're now ready to use **PrepInterview-AI** 🎉
 
 ---
 
+## Live Demo
+
+The **PrepInterview-AI** app is deployed at [https://prepinterview-ai.com](https://prepinterview-ai-client-0oqt.onrender.com/)
+
+---
+
 ## Developed by
 
 This project is developed by Akash Naskar.
