@@ -19,6 +19,8 @@ const Auth = ({isModel = false}) => {
     try {
     const googleResponse = await signInWithPopup(auth, provider);
 
+    console.log(googleResponse) // to be removed in production, just for debugging purposes
+
     const data = {
       name: googleResponse.user.displayName,
       email: googleResponse.user.email,
