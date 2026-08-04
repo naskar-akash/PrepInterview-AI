@@ -191,6 +191,52 @@ You're now ready to use **PrepInterview-AI** 🎉
 
 ---
 
+## Live Demo
+
+The **PrepInterview-AI** app is deployed at [https://prepinterview-ai.com](https://prepinterview-ai-client-0oqt.onrender.com/)
+
+---
+
+## Future Upgradation
+
+A future version of PrepInterview-AI will include a Machine Learning module to predict a candidate's probability of getting selected after completing multiple mock interviews.
+
+#### Proposed Workflow
+
+1. Candidates complete mock interviews.
+2. The system records interview metrics such as:
+   - Confidence Score
+   - Communication Score
+   - Technical Correctness
+   - Final Interview Score
+   - Number of Mock Interviews Attempted
+3. Candidates who receive actual interview results can submit feedback indicating whether they were selected.
+4. This real-world feedback will be stored as labeled training data.
+5. A Logistic Regression model will be trained on this dataset.
+6. The trained model will estimate the probability of selection for future users.
+
+#### Example Dataset
+
+interviews_count, confidence, communication, correctness, final_score, selected
+
+5,82,78,80,81,Yes
+
+2,55,60,58,57,No
+
+8,91,88,90,90,Yes
+
+1,40,45,42,43,No
+
+#### Planned Technologies
+
+- Python
+- Scikit-Learn
+- Logistic Regression
+- Pandas
+- NumPy
+
+---
+
 ## Developed by
 
 This project is developed by Akash Naskar.
